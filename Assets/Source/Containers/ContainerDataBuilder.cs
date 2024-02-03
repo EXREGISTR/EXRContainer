@@ -2,20 +2,20 @@
 using EXRContainer.Core;
 
 namespace EXRContainer {
-    internal struct ContainerConfigurationBuilder {
-        private List<DependencyProvider> singletonsNonLazy;
+    internal struct ContainerDataBuilder {
+        private List<DependencyProvider> nonLazySingletons;
         private List<DependencyProvider> scopedNonLazy;
 
         public void PlaceNonLazy(DependencyProvider provider) {
             if (provider.LifeTime == LifeTime.Singleton) {
-                singletonsNonLazy ??= new List<DependencyProvider>();
-                singletonsNonLazy.Add(provider);
+                nonLazySingletons ??= new List<DependencyProvider>();
+                nonLazySingletons.Add(provider);
             } else if (provider.LifeTime == LifeTime.Scoped) {
                 scopedNonLazy ??= new List<DependencyProvider>();
                 scopedNonLazy.Add(provider);
             }
         }
 
-        public readonly IContainerData Build() => new ContainerData();
+        public readonly ContainerData Build() => new(nonLazySingletons, scopedNonLazy);
     }
 }

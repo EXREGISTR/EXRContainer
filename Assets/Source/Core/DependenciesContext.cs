@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EXRContainer.Core {
     public class DependenciesContext : IDIContext {
@@ -10,18 +11,17 @@ namespace EXRContainer.Core {
             this.container = container;
         }
 
-        public void AddDependency(object instance) {
-            var type = instance.GetType();
+        public void AddDependency<T>(T instance, IEnumerable<Type> contractTypes) {
+            localObjects ??= new Dictionary<Type, object>();
 
-            if (localObjects == null) {
-                localObjects = new Dictionary<Type, object> { [type] = instance };
+            if (contractTypes == null || !contractTypes.Any()) {
+                localObjects[typeof(T)] = instance;
                 return;
             }
 
-            if (!localObjects.ContainsKey(type)) {
-                localObjects[type] = instance;
-            } else {
-                throw new AlreadyExistSingleException(type);
+            foreach (var type in contractTypes) {
+                var result = localObjects.TryAdd(type, instance);
+                if (!result) throw new AlreadyExistSingleException(type);
             }
         }
 

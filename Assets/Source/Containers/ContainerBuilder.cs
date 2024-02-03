@@ -7,38 +7,40 @@ namespace EXRContainer {
     public sealed class ContainerBuilder {
         private readonly ContainerConfiguration config;
 
-        private readonly List<DependencyCreationData> dependenciesData;
+        private readonly List<IDependencyCreationData> dependenciesData;
 
         #region DependencyRegistrationAPI
-        public ICreationMethodChoiser<TService> Register<TService>() where TService : class {
+        public IContractTypeChoiser<TService> Register<TService>() where TService : class {
             ValidateServiceType<TService>();
 
             var data = GetDependencyData();
-            return CreateConfigurator<TService>(data);
+            var configurator = CreateConfigurator<TService>(data);
+            configurator.ForSelf();
+            return configurator;
         }
 
-        public ICreationMethodChoiser<TService> Register<T1, TService>() where TService : class, T1 
+        public ISelfContractTypeChoiser<TService> Register<T1, TService>() where TService : class, T1 
             => Register<TService>(typeof(T1));
 
-        public ICreationMethodChoiser<TService> Register<T1, T2, TService>() 
+        public ISelfContractTypeChoiser<TService> Register<T1, T2, TService>() 
             where TService : class, T1, T2 
             => Register<TService>(typeof(T1), typeof(T2));
 
-        public ICreationMethodChoiser<TService> Register<T1, T2, T3, TService>() 
+        public ISelfContractTypeChoiser<TService> Register<T1, T2, T3, TService>() 
             where TService : class, T1, T2, T3
             => Register<TService>(typeof(T1), typeof(T2), typeof(T3));
 
-        public ICreationMethodChoiser<TService> Register<T1, T2, T3, T4, TService>() 
+        public ISelfContractTypeChoiser<TService> Register<T1, T2, T3, T4, TService>() 
             where TService : class, T1, T2, T3, T4
             => Register<TService>(typeof(T1), typeof(T2), typeof(T3), typeof(T4));
 
 
-        public ICreationMethodChoiser<TService> Register<T1, T2, T3, T4, T5, TService>() 
+        public ISelfContractTypeChoiser<TService> Register<T1, T2, T3, T4, T5, TService>() 
             where TService : class, T1, T2, T3, T4, T5
             => Register<TService>(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5));
 
 
-        public ICreationMethodChoiser<TService> Register<T1, T2, T3, T4, T5, T6, TService>() 
+        public ISelfContractTypeChoiser<TService> Register<T1, T2, T3, T4, T5, T6, TService>() 
             where TService : class, T1, T2, T3, T4, T5, T6
             => Register<TService>(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6));
         #endregion
@@ -53,12 +55,11 @@ namespace EXRContainer {
         }
 
         private DependencyConfigurator<TService> CreateConfigurator<TService>(DependencyCreationData data) where TService : class {
-            return new DependencyConfigurator<TService>(data, this);
+            return new DependencyConfigurator<TService>(data);
         }
 
         private DependencyCreationData GetDependencyData() {
-            
-            
+
         }
         
         #region Validation

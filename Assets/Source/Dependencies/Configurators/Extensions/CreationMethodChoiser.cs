@@ -13,7 +13,7 @@ namespace EXRContainer.Dependencies {
             return this;
         }
 
-        public IOnlyFinalizatorChoiser<TService> FromInstance(TService service) {
+        public IWithoutCreationCallbacksCompleteChoiser<TService> FromInstance(TService service) {
             return this;
         }
     }

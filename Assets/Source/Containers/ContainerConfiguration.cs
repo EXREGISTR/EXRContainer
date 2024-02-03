@@ -1,9 +1,8 @@
 ﻿using EXRContainer.CodeGeneration;
-using EXRContainer.Core;
 
 namespace EXRContainer {
-    public readonly struct ContainerConfiguration {
-        public ILambdaCreator<Factory<object>> InstantiationLambdaCreator { get; }
-        public ILambdaCreator<Finalizator<object>> FinalizationLambdaCreator { get; }
+    internal readonly struct ContainerConfiguration {
+        public FactoryLambdaCreator InstantiationLambdaCreator { get; }
+        public FinalizationLambdaCreator FinalizationLambdaCreator { get; }
     }
 }

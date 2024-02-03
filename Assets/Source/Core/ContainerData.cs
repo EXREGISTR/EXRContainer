@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace EXRContainer.Core {
-    internal class ContainerData {
+    internal readonly struct ContainerData {
         public IEnumerable<DependencyProvider> NonLazySingletonsDependencies { get; }
         public IEnumerable<DependencyProvider> NonLazyScopedDependencies { get; }
 
@@ -9,6 +9,5 @@ namespace EXRContainer.Core {
             NonLazySingletonsDependencies = nonLazySingletons;
             NonLazyScopedDependencies = nonLazyScoped;
         }
-
     }
 }

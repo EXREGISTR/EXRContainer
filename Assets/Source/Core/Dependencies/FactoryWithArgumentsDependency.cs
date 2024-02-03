@@ -8,9 +8,8 @@ namespace EXRContainer.Core {
         public FactoryWithArgumentsDependency(
             Dictionary<Type, object> arguments,
             PreCreationCallback preCreationCallback, 
-            Factory<object> factory, 
-            OnInstantiatedCallback<object> onInstantiatedCallback) 
-            : base(preCreationCallback, factory, onInstantiatedCallback) {
+            Factory<object> factory)
+            : base(preCreationCallback, factory) {
             this.arguments = arguments;
         }
 

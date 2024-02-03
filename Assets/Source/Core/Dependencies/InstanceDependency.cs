@@ -6,6 +6,6 @@
             this.instance = instance;
         }
 
-        public object Resolve(IDIContext _, IContainerData __) => instance;
+        public object Resolve(IDIContext _) => instance;
     }
 }

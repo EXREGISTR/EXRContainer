@@ -1,16 +1,16 @@
 ﻿namespace EXRContainer.Dependencies {
     public partial class DependencyConfigurator<TService> : ILifeTimeChoiser {
-        public ContainerBuilder AsScoped() {
+        public void AsScoped() {
 
-            return builder;
+            
         }
 
-        public ContainerBuilder AsSingleton() {
-            return builder;
+        public void AsSingleton() {
+           
         }
 
-        public ContainerBuilder AsTransient() {
-            return builder;
+        public void AsTransient() {
+            
         }
     }
 }

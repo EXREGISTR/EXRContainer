@@ -4,10 +4,10 @@ using System.Linq.Expressions;
 using EXRContainer.Core;
 
 namespace EXRContainer.CodeGeneration {
-    internal class InstantiationLambdaCreator {
+    internal class FactoryLambdaCreator {
         private readonly IEnumerable<IExpressionsProvider> providers;
 
-        public InstantiationLambdaCreator(IEnumerable<IExpressionsProvider> providers) {
+        public FactoryLambdaCreator(IEnumerable<IExpressionsProvider> providers) {
             this.providers = providers;
         }
 
