@@ -25,11 +25,4 @@ namespace EXRContainer.Core {
             
         }
     }
-
-    public class ObjectDoesntBelongToContext {
-        public ObjectDoesntBelongToContext()
-        {
-            
-        }
-    }
 }

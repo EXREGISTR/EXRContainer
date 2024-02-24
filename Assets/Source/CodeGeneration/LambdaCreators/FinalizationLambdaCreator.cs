@@ -4,12 +4,20 @@ using System.Linq.Expressions;
 using EXRContainer.Core;
 
 namespace EXRContainer.CodeGeneration {
-    internal class FinalizationLambdaCreator {
-        private readonly IEnumerable<IExpressionsProvider> providers;
+    internal class FinalizationLambdaCreator : ILambdaCreator<Finalizator<object>> {
+        private readonly LinkedList<IExpressionsProvider> providers;
 
-        public FinalizationLambdaCreator(IEnumerable<IExpressionsProvider> providers) {
-            this.providers = providers;
+        public FinalizationLambdaCreator() {
+            providers = new LinkedList<IExpressionsProvider>();
         }
+
+        public FinalizationLambdaCreator(FinalizationLambdaCreator other) {
+            providers = new LinkedList<IExpressionsProvider>(other.providers);
+        }
+
+        public void FirstProvider(IExpressionsProvider provider) => providers.AddFirst(provider);
+
+        public void LastProvider(IExpressionsProvider provider) => providers.AddLast(provider);
 
         public Finalizator<object> Create(Type dependencyType, LifeTime lifeTime) {
             var typedInstanceVariable = Expression.Variable(dependencyType, $"{dependencyType.Name}");
@@ -21,9 +29,10 @@ namespace EXRContainer.CodeGeneration {
             var contextParameter = ExpressionsCache.ContextParameter;
             var instanceParameter = ExpressionsCache.ObjectParameter;
 
-            var describedCastExpression = ExpressionsHelper.DescribeCast(typedInstanceVariable, dependencyType, instanceParameter);
+            var castObjectExpression = ExpressionsHelper.DescribeCast(typedInstanceVariable, dependencyType, instanceParameter);
+            // SomeType typedInstance = (SomeType)instanceParameter;
 
-            var expressions = new List<Expression>() { describedCastExpression };
+            var expressions = new List<Expression>() { castObjectExpression };
 
             var context = new ExecutionContext(contextParameter, typedInstanceVariable, dependencyType, lifeTime);
             foreach (var provider in providers) {

@@ -5,14 +5,15 @@ using System.Linq;
 namespace EXRContainer.Core {
     public class DIContainer : IDIContainer, IDIContext {
         private readonly Dictionary<Type, DependencyProvider> dependencies;
-        private readonly ContainerData data;
         private readonly SinglesStack singletons;
+        private readonly IEnumerable<DependencyProvider> nonLazyScopedDependencies;
 
         private Dictionary<IDIContext, SinglesStack> contexts;
         private bool disposedValue;
 
         internal DIContainer(Dictionary<Type, DependencyProvider> dependencies, 
-            ContainerData data,
+            IEnumerable<DependencyProvider> nonLazySingletons,
+            IEnumerable<DependencyProvider> nonLazyScopedDependencies,
             DIContainer parent = null) {
             if (parent == null) {
                 this.dependencies = dependencies;
@@ -21,18 +22,17 @@ namespace EXRContainer.Core {
                 this.dependencies = new Dictionary<Type, DependencyProvider>(mergedDependencies);
             }
             
-            this.data = data;
             this.singletons = new SinglesStack(this);
+            this.nonLazyScopedDependencies = nonLazyScopedDependencies;
             this.AddDependency<DIContainer, IDIContainer, IDIContext>(this);
 
-            CreateNonLazySingletons();
+            CreateNonLazySingletons(nonLazySingletons);
         }
 
-        private void CreateNonLazySingletons() {
-            var dependencies = data.NonLazySingletonsDependencies;
+        private void CreateNonLazySingletons(IEnumerable<DependencyProvider> nonLazySingletons) {
             if (dependencies == null) return;
 
-            foreach (var provider in dependencies) {
+            foreach (var provider in nonLazySingletons) {
                 var single = provider.Source.Resolve(this);
                 singletons.PushSingle(single, provider.Finalizator, provider.ContractTypes);
             }
@@ -41,27 +41,24 @@ namespace EXRContainer.Core {
         public IDIContext CreateContext() {
             var context = new DependenciesContext(this);
             contexts ??= new Dictionary<IDIContext, SinglesStack>();
-            IEnumerable<DependencyProvider> dependencies = data.NonLazyScopedDependencies;
 
             context.AddDependency(context);
 
-            if (dependencies != null) {
-                CreateNonLazyScopedDependencies(context, dependencies);
-            } else {
-                contexts[context] = null;
-            }
+            contexts[context] = CreateNonLazyScopedDependencies(context);
 
             return context;
         }
 
-        private void CreateNonLazyScopedDependencies(IDIContext context, IEnumerable<DependencyProvider> dependencies) {
+        private SinglesStack CreateNonLazyScopedDependencies(IDIContext context) {
+            if (nonLazyScopedDependencies == null) return null;
+
             var scopedObjects = new SinglesStack(this);
-            foreach (var provider in dependencies) {
+            foreach (var provider in nonLazyScopedDependencies) {
                 var scoped = provider.Source.Resolve(context);
                 scopedObjects.PushSingle(scoped, provider.Finalizator, provider.ContractTypes);
             }
 
-            contexts[context] = scopedObjects;
+            return scopedObjects;
         }
 
         public object Resolve(IDIContext context, Type dependencyType) {
@@ -121,6 +118,15 @@ namespace EXRContainer.Core {
 
         public void Delete(object instance) => Release(this, instance);
 
+        public void DeleteContext(IDIContext context) {
+            if (contexts == null || !contexts.TryGetValue(context, out SinglesStack singles)) {
+                throw new NoAccessToContextException(context);
+            }
+
+            singles.Dispose();
+            contexts.Remove(context);
+        }
+
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -159,27 +165,19 @@ namespace EXRContainer.Core {
 
         private void ReleaseObject(IDIContext context, SinglesStack singles, object instance, in DependencyProvider provider) {
             if (singles == null) {
-                provider.Finalizator?.Invoke(null, instance);
+                provider.Finalizator?.Invoke(this, instance);
                 return;
             }
 
             var founded = singles.DeleteSingle(provider.ContractTypes);
             if (founded == null) {
-                provider.Finalizator?.Invoke(null, instance);
+                provider.Finalizator?.Invoke(this, instance);
                 return;
             }
 
+            // if founded is not instance, so will be finalized founded object 
             object objectToFinalize = founded != instance ? founded : instance;
             provider.Finalizator?.Invoke(context, objectToFinalize);
-        }
-
-        public void DeleteContext(IDIContext context) {
-            if (contexts == null || !contexts.TryGetValue(context, out SinglesStack singles)) {
-                throw new NoAccessToContextException(context);
-            }
-
-            singles.Dispose();
-            contexts.Remove(context);
         }
 
         private SinglesStack FindScopedObjects(IDIContext context) {

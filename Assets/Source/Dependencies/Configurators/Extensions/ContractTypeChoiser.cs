@@ -1,5 +1,5 @@
-﻿using EXRContainer.Core;
-using EXRContainer.Utils;
+﻿using System;
+using System.Collections.Generic;
 
 namespace EXRContainer.Dependencies {
     public partial class DependencyConfigurator<TService> : IContractTypeChoiser<TService>, ISelfContractTypeChoiser<TService> {
@@ -9,11 +9,15 @@ namespace EXRContainer.Dependencies {
         }
 
         public ICreationMethodChoiser<TService> ForInterfaces() {
+            data.ContractTypes ??= new HashSet<Type>();
             data.ContractTypes.Clear();
             var interfaces = data.ConcreteType.GetInterfaces();
 
             for (int i = 0; i < interfaces.Length; i++) {
-                
+                var contract = interfaces[i];
+                if (DependencyTypeValidator.TypeIsUsable(contract)) {
+                    data.ContractTypes.Add(contract);
+                }
             }
 
             return this;
