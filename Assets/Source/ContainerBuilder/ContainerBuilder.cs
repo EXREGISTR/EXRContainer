@@ -4,15 +4,27 @@ using EXRContainer.Core;
 using EXRContainer.Dependencies;
 
 namespace EXRContainer {
+    internal interface I
     public sealed class ContainerBuilder {
         private readonly DIContainer parent;
         private readonly ContainerConfiguration config;
+        private readonly Func<IDependencyCreationData, DependencyProvider> dependencyProviderCreator;
 
         private readonly List<IDependencyCreationData> dependenciesData;
 
-        internal ContainerBuilder(DIContainer parent, ContainerConfiguration config) {
+        internal ContainerBuilder(DIContainer parent, ContainerConfiguration config, CodeGenerationData? sourceGeneration) {
             this.parent = parent;
             this.config = config;
+
+            if (sourceGeneration.HasValue) {
+                dependencyProviderCreator = data => {
+                    var dependency = data.Creator.Create(sourceGeneration.Value);
+                    var finalizator = sourceGeneration.
+                    var provider = new DependencyProvider(dependency, data.ContractTypes, data.LifeTime,
+                    data.OnResolveCallback, finalizator);
+                    return provider;
+                };
+            }
         }
         
         public IContractTypeChoiser<TService> Register<TService>() where TService : class {
@@ -55,13 +67,14 @@ namespace EXRContainer {
         public DIContainer Build() {
             List<DependencyProvider> nonLazySingletons = null;
             List<DependencyProvider> scopedNonLazy = null;
+            Dictionary<Type, DependencyProvider> dependencies = null;
 
             foreach (var data in dependenciesData) {
                 var provider = CreateDependencyProvider(data);
-                PlaceNonLazy(provider);
+                if (data.NonLazy) PlaceNonLazy(provider);
             }
 
-            var container = new DIContainer();
+            var container = new DIContainer(dependencies, nonLazySingletons, scopedNonLazy, parent);
 
             return container;
 
@@ -77,14 +90,23 @@ namespace EXRContainer {
         }
 
         private DependencyProvider CreateDependencyProvider(IDependencyCreationData data) {
-            var dependency = data.Creator.Create();
+            var dependency = data.Creator.Create(config.WithCodeGeneration ? );
 
-            var finalizator = data.Finalizator == null ?
-                config.CodeGenerationData.DefaultFinalizatorCreator : 
-                config.CodeGenerationData.CopyFinalizatorCreator.FirstProvider();
+            Finalizator<object> finalizator;
+
+            if (config.WithCodeGeneration) {
+                if (data.Finalizator == null) {
+                    finalizator = config.CodeGenerationData.DefaultFinalizatorCreator.Create(data.ConcreteType, data.LifeTime);
+                } else {
+                    var creator = config.CodeGenerationData.CopyFinalizatorCreator.FirstProvider().;
+                }
+            } else {
+                finalizator = data.Finalizator;
+            }
 
             var provider = new DependencyProvider(dependency, data.ContractTypes, data.LifeTime,
                 data.OnResolveCallback, finalizator);
+            return provider;
         }
 
         private DependencyConfigurator<TService> Register<TService>(params Type[] contractTypes) where TService : class {

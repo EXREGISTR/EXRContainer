@@ -6,7 +6,7 @@ namespace EXRContainer {
         private readonly FactoryLambdaCreator defaultFactoryCreator;
         private readonly FinalizationLambdaCreator defaultFinalizatorCreator;
 
-        public CodeGenerationData(
+        internal CodeGenerationData(
             FactoryLambdaCreator defaultFactoryCreator, 
             FinalizationLambdaCreator defaultFinalizatorCreator) {
             this.defaultFactoryCreator = defaultFactoryCreator;

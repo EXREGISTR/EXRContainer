@@ -36,7 +36,7 @@ namespace EXRContainer {
             }
         }
 
-        public static bool TypeIsUsable(Type type) => invalidTypes.Contains(type);
+        public static bool TypeIsUsable(Type type) => !invalidTypes.Contains(type);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsAbstract(Type type) => type.IsInterface || type.IsAbstract;

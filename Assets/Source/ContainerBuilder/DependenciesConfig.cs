@@ -1,8 +1,7 @@
 ﻿using EXRContainer.Core;
 
 namespace EXRContainer {
-    internal readonly struct ContainerConfiguration {
-        public CodeGenerationData CodeGenerationData { get; }
+    internal readonly struct DependenciesConfig {
         public LifeTime DefaultLifeTime { get; }
         public bool NonLazyCreationByDefault { get; }
     }
