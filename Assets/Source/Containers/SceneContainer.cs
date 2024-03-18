@@ -1,36 +1,52 @@
-﻿using System.Threading.Tasks;
-using EXRContainer.Core;
+﻿using EXRContainer.Core;
 using UnityEngine;
 
 namespace EXRContainer {
-    public sealed class SceneContainer : GlobalContainerProvider {
+    public sealed class SceneContainer : MonoBehaviour {
+        [SerializeField] private MonoInstaller[] monoInstallers;
+        [SerializeField] private ScriptableInstaller[] scriptableInstallers;
+        [SerializeField] private EntityContainer[] entityContainers;
+
         private static DIContainer source;
 
-        public override Task Initialize() {
-            if (source != null) {
-                Debug.LogError("Scene source already exist on this scene");
-                Destroy(this);
-                return Task.CompletedTask;
-            }
+        private void Awake() {
+            var configuration = ProjectContainer.Resolve<ContainersConfiguration>();
+            var codeGenerationConfig = ProjectContainer.Resolve<CodeGenerationConfiguration>();
+            
+            var builder = CreateBuilder(configuration, codeGenerationConfig);
 
-            var task = Task.Run(InstallDependencies);
-
-            Debug.Log("The scene container has been initialized!");
-            return task;
-        }
-
-        private void InstallDependencies() {
-            var builder = ProjectContainer.CreateBuilder();
+            InstallDependencies(builder);
 
             source = builder.Build();
+            InstallEntityContainers(codeGenerationConfig);
         }
 
-        private void OnDestroy() {
-            Debug.Log("The main dependency source is being cleaned up...");
-            source.Dispose();
-            source = null;
+        private void InstallDependencies(ContainerBuilder builder) {
+            builder.Register<SceneContainer>().FromInstance(this);
+
+            foreach (var monoInstaller in monoInstallers) {
+                monoInstaller.Install(builder);
+            }
+
+            foreach (var scriptableInstaller in scriptableInstallers) {
+                scriptableInstaller.Install(builder);
+            }
         }
 
-        public static ContainerBuilder CreateBuilder() => new ContainerBuilder(source);
+        private void InstallEntityContainers(CodeGenerationConfiguration codeGenerationConfig) {
+            foreach (var entityContainer in entityContainers) {
+                entityContainer.Install(source, codeGenerationConfig);
+            }
+        }
+
+        private ContainerBuilder CreateBuilder(ContainersConfiguration configuration, CodeGenerationConfiguration codeGenerationConfig) {
+            var dependenciesConfig = new DependenciesConfiguration(
+                configuration.DefaultLifeTime, configuration.NonLazyCreation);
+            
+            var parent = ProjectContainer.Resolve<DIContainer>();
+            var builder = new ContainerBuilder(parent, dependenciesConfig, codeGenerationConfig);
+
+            return builder;
+        }
     }
 }

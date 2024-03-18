@@ -6,6 +6,7 @@ namespace EXRContainer.Core {
     public class DIContainer : IDIContainer, IDIContext {
         private readonly Dictionary<Type, DependencyProvider> dependencies;
         private readonly SinglesStack singletons;
+        private readonly Dictionary<Type, object> dynamicAddedObjects;
         private readonly IEnumerable<DependencyProvider> nonLazyScopedDependencies;
 
         private Dictionary<IDIContext, SinglesStack> contexts;
@@ -24,14 +25,19 @@ namespace EXRContainer.Core {
             
             this.singletons = new SinglesStack(this);
             this.nonLazyScopedDependencies = nonLazyScopedDependencies;
-            this.AddDependency<DIContainer, IDIContainer, IDIContext>(this);
+            this.dynamicAddedObjects = new Dictionary<Type, object>();
+            RegisterContainer();
 
             CreateNonLazySingletons(nonLazySingletons);
         }
 
-        private void CreateNonLazySingletons(IEnumerable<DependencyProvider> nonLazySingletons) {
-            if (dependencies == null) return;
+        private void RegisterContainer() {
+            dynamicAddedObjects[typeof(DIContainer)] = this;
+            dynamicAddedObjects[typeof(IDIContext)] = this;
+            dynamicAddedObjects[typeof(IDIContainer)] = this;
+        }
 
+        private void CreateNonLazySingletons(IEnumerable<DependencyProvider> nonLazySingletons) {
             foreach (var provider in nonLazySingletons) {
                 var single = provider.Source.Resolve(this);
                 singletons.PushSingle(single, provider.Finalizator, provider.ContractTypes);
@@ -42,17 +48,17 @@ namespace EXRContainer.Core {
             var context = new DependenciesContext(this);
             contexts ??= new Dictionary<IDIContext, SinglesStack>();
 
-            context.AddDependency(context);
-
-            contexts[context] = CreateNonLazyScopedDependencies(context);
+            if (nonLazyScopedDependencies == null) {
+                contexts[context] = null;
+            } else {
+                contexts[context] = CreateScopedObjectsStorage(context);
+            }
 
             return context;
         }
 
-        private SinglesStack CreateNonLazyScopedDependencies(IDIContext context) {
-            if (nonLazyScopedDependencies == null) return null;
-
-            var scopedObjects = new SinglesStack(this);
+        private SinglesStack CreateScopedObjectsStorage(IDIContext context) {
+            var scopedObjects = new SinglesStack(context);
             foreach (var provider in nonLazyScopedDependencies) {
                 var scoped = provider.Source.Resolve(context);
                 scopedObjects.PushSingle(scoped, provider.Finalizator, provider.ContractTypes);
@@ -66,10 +72,12 @@ namespace EXRContainer.Core {
             try {
                 provider = FindProvider(dependencyType);
             } catch (NoDependencyException exception) {
-                if (singletons != null) {
-                    var single = singletons.FindSingle(dependencyType);
-                    if (single != null) return single;
+                if (dynamicAddedObjects.TryGetValue(dependencyType, out object single)) {
+                    return single;
                 }
+
+                single = singletons.FindSingle(dependencyType);
+                if (single != null) return single;
 
                 throw exception;
             }
@@ -107,11 +115,13 @@ namespace EXRContainer.Core {
 
         public void AddDependency<T>(T instance, IEnumerable<Type> contractTypes) {
             if (contractTypes == null || !contractTypes.Any()) {
-                singletons.PushSingle(instance, typeof(T));
+                AddDynamicObject(typeof(T), instance);
                 return;
-            } 
+            }
 
-            singletons.PushSingle(instance, null, contractTypes);
+            foreach (var type in contractTypes) {
+                AddDynamicObject(type, instance);
+            }
         }
 
         public object Resolve(Type dependencyType) => Resolve(this, dependencyType);
@@ -130,6 +140,12 @@ namespace EXRContainer.Core {
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        private void AddDynamicObject(Type type, object instance) {
+            DependencyTypeValidator.AssertTypeForUsable(type);
+            var result = dynamicAddedObjects.TryAdd(type, instance);
+            if (!result) throw new AlreadyExistSingleException(type);
         }
 
         private object ResolveScoped(IDIContext context, in DependencyProvider provider) {

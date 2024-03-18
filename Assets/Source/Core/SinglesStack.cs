@@ -6,7 +6,7 @@ namespace EXRContainer.Core {
     internal class SinglesStack : IDisposable {
         private readonly IDIContext context;
 
-        private Dictionary<Type, Single> singles; 
+        private Dictionary<Type, Single> singles;
         private List<Single> orderToFinalize;
 
         private bool disposedValue;
@@ -33,8 +33,7 @@ namespace EXRContainer.Core {
             return null;
         }
 
-        public void PushSingle(object single, Finalizator<object> finalizator, IEnumerable<Type> contractTypes) {
-            singles ??= new Dictionary<Type, Single>();
+        public void PushSingle(object single, Finalizator<object> finalizator, IEnumerable<Type> contractTypes) { 
             orderToFinalize ??= new List<Single>();
             var wrapper = new Single(single, finalizator);
 
@@ -50,18 +49,21 @@ namespace EXRContainer.Core {
             orderToFinalize.Add(wrapper);
         }
 
-        public void PushSingle(object single, Type dependencyType) {
-            var wrapper = new Single(single, null);
+        public void PushSingle(object single, Type dependencyType, Finalizator<object> finalizator) {
+            var wrapper = new Single(single, finalizator);
             PushSingle(dependencyType, wrapper);
         }
 
         private void PushSingle(Type type, in Single wrapper) {
-            var result = singles.TryAdd(type, wrapper);
+            var hasSingle = singles.ContainsKey(type);
 
-            if (!result) {
+            if (hasSingle) {
                 throw new AlreadyExistSingleException(type);
             }
-        } 
+
+            singles[type] = wrapper;
+            return;
+        }
 
         public object DeleteSingle(IEnumerable<Type> contractTypes) {
             if (singles == null) return null;
@@ -79,7 +81,7 @@ namespace EXRContainer.Core {
             if (!founded) return null;
 
             foreach (var contract in contractTypes) {
-                singles.Remove(contract); 
+                singles.Remove(contract);
             }
 
             var index = orderToFinalize.BinarySearch(single);

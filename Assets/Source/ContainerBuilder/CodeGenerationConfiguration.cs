@@ -2,11 +2,11 @@
 using EXRContainer.Core;
 
 namespace EXRContainer {
-    internal readonly struct CodeGenerationData {
+    internal class CodeGenerationConfiguration {
         private readonly FactoryLambdaCreator defaultFactoryCreator;
         private readonly FinalizationLambdaCreator defaultFinalizatorCreator;
 
-        internal CodeGenerationData(
+        public CodeGenerationConfiguration(
             FactoryLambdaCreator defaultFactoryCreator, 
             FinalizationLambdaCreator defaultFinalizatorCreator) {
             this.defaultFactoryCreator = defaultFactoryCreator;

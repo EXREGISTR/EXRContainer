@@ -5,28 +5,38 @@ using System.Linq;
 namespace EXRContainer.Core {
     public class DependenciesContext : IDIContext {
         private readonly DIContainer container;
-        private Dictionary<Type, object> localObjects;
+        private readonly Dictionary<Type, object> localObjects;
 
         public DependenciesContext(DIContainer container) {
             this.container = container;
+            this.localObjects = new Dictionary<Type, object>();
+            RegisterContext();
+        }
+
+        private void RegisterContext() {
+            localObjects[typeof(IDIContext)] = this;
         }
 
         public void AddDependency<T>(T instance, IEnumerable<Type> contractTypes) {
-            localObjects ??= new Dictionary<Type, object>();
-
             if (contractTypes == null || !contractTypes.Any()) {
-                localObjects[typeof(T)] = instance;
+                AddDependency(typeof(T), instance);
                 return;
             }
 
             foreach (var type in contractTypes) {
-                var result = localObjects.TryAdd(type, instance);
-                if (!result) throw new AlreadyExistSingleException(type);
+                AddDependency(type, instance);
             }
         }
 
+        private void AddDependency(Type type, object instance) {
+            DependencyTypeValidator.AssertTypeForUsable(type);
+
+            var result = localObjects.TryAdd(type, instance);
+            if (!result) throw new AlreadyExistSingleException(type);
+        }
+
         public object Resolve(Type dependencyType) {
-            if (localObjects != null && localObjects.TryGetValue(dependencyType, out var instance)) {
+            if (localObjects.TryGetValue(dependencyType, out var instance)) {
                 return instance;
             }
 

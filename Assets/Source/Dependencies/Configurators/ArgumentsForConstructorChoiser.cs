@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
-
-namespace EXRContainer.Dependencies {
+﻿namespace EXRContainer.Dependencies {
     public partial class DependencyConfigurator<TService> : IArgumentsChoiser<TService> {
         public ICallbacksChoiser<TService> WithArguments<T>(T argument) {
             var type = typeof(T);
@@ -10,13 +7,7 @@ namespace EXRContainer.Dependencies {
             return this;
         }
 
-        internal ICallbacksChoiser<TService> WithArguments(params KeyValuePair<Type, object>[] arguments) {
-            data.Arguments = new Dictionary<Type, object>(arguments);
-        }
-
         public ICallbacksChoiser<TService> WithArguments<T1, T2>(T1 arg1, T2 arg2) {
-            WithArguments(new KeyValuePair<Type, object>(typeof(T1), arg1));
-
             WithArguments(arg1);
             WithArguments(arg2);
             return this;

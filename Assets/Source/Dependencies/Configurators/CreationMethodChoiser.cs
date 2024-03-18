@@ -1,20 +1,20 @@
 ﻿using EXRContainer.Core;
+using System;
 
 namespace EXRContainer.Dependencies {
     public partial class DependencyConfigurator<TService> : ICreationMethodChoiser<TService> {
         public IArgumentsChoiser<TService> FromConstructor() {
-            
-            return this;
+
+            throw new NotImplementedException();
         }
 
         public IWithoutCreationCallbacksChoiser<TService> FromFactory(Factory<TService> factory) {
 
-
-            return this;
+            throw new NotImplementedException();
         }
 
         public IWithoutCreationCallbacksCompleteChoiser<TService> FromInstance(TService service) {
-            return this;
+            throw new NotImplementedException();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace EXRContainer.CodeGeneration {
             providers = new LinkedList<IExpressionsProvider>(other.providers);
         }
 
-        public void CreationProvider(IExpressionsProvider provider) {
+        public void CreationProvider(ICreationExpressionsProvider provider) {
             if (providers.First != null) {
                 providers.First.Value = provider;
                 return;
@@ -43,9 +43,11 @@ namespace EXRContainer.CodeGeneration {
                 expressions.AddRange(provider.GenerateCode(context));
             }
 
-            expressions.Add(instanceVariable);
             // generated:
             // return instance;
+
+            expressions.Add(instanceVariable);
+            
 
             var block = Expression.Block(variables, expressions);
             var lambda = Expression.Lambda<Factory<object>>(block, contextParameter);

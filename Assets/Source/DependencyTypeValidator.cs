@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace EXRContainer {
     internal static class DependencyTypeValidator {
@@ -31,14 +30,13 @@ namespace EXRContainer {
         }
 
         public static void AssertTypeForUsable(Type type) {
-            if (TypeIsUsable(type)) {
+            if (invalidTypes.Contains(type)) {
                 throw new ArgumentException($"{type.Name} can not be used, because it's invalid type!");
             }
         }
 
         public static bool TypeIsUsable(Type type) => !invalidTypes.Contains(type);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsAbstract(Type type) => type.IsInterface || type.IsAbstract;
     }
 }

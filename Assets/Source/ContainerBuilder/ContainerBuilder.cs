@@ -4,29 +4,19 @@ using EXRContainer.Core;
 using EXRContainer.Dependencies;
 
 namespace EXRContainer {
-    internal interface I
     public sealed class ContainerBuilder {
         private readonly DIContainer parent;
-        private readonly ContainerConfiguration config;
-        private readonly Func<IDependencyCreationData, DependencyProvider> dependencyProviderCreator;
+        private readonly DependenciesConfiguration config;
+        private readonly CodeGenerationConfiguration codeGenerationData;
 
         private readonly List<IDependencyCreationData> dependenciesData;
 
-        internal ContainerBuilder(DIContainer parent, ContainerConfiguration config, CodeGenerationData? sourceGeneration) {
+        internal ContainerBuilder(DIContainer parent, DependenciesConfiguration config, CodeGenerationConfiguration codeGenerationConfig) {
             this.parent = parent;
             this.config = config;
-
-            if (sourceGeneration.HasValue) {
-                dependencyProviderCreator = data => {
-                    var dependency = data.Creator.Create(sourceGeneration.Value);
-                    var finalizator = sourceGeneration.
-                    var provider = new DependencyProvider(dependency, data.ContractTypes, data.LifeTime,
-                    data.OnResolveCallback, finalizator);
-                    return provider;
-                };
-            }
+            this.codeGenerationData = codeGenerationConfig;
         }
-        
+
         public IContractTypeChoiser<TService> Register<TService>() where TService : class {
             DependencyTypeValidator.ValidateServiceType(typeof(TService));
 
@@ -90,23 +80,8 @@ namespace EXRContainer {
         }
 
         private DependencyProvider CreateDependencyProvider(IDependencyCreationData data) {
-            var dependency = data.Creator.Create(config.WithCodeGeneration ? );
-
-            Finalizator<object> finalizator;
-
-            if (config.WithCodeGeneration) {
-                if (data.Finalizator == null) {
-                    finalizator = config.CodeGenerationData.DefaultFinalizatorCreator.Create(data.ConcreteType, data.LifeTime);
-                } else {
-                    var creator = config.CodeGenerationData.CopyFinalizatorCreator.FirstProvider().;
-                }
-            } else {
-                finalizator = data.Finalizator;
-            }
-
-            var provider = new DependencyProvider(dependency, data.ContractTypes, data.LifeTime,
-                data.OnResolveCallback, finalizator);
-            return provider;
+            // todo
+            throw new NotImplementedException();
         }
 
         private DependencyConfigurator<TService> Register<TService>(params Type[] contractTypes) where TService : class {
@@ -119,7 +94,7 @@ namespace EXRContainer {
         }
 
         private DependencyConfigurator<TService> CreateConfigurator<TService>(DependencyCreationData<TService> data) where TService : class {
-            return new DependencyConfigurator<TService>(data);
+            return new DependencyConfigurator<TService>(data, codeGenerationData);
         }
 
         private DependencyCreationData<TService> CreateDependencyData<TService>() where TService : class {
