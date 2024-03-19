@@ -10,7 +10,7 @@ namespace EXRContainer {
         [SerializeField] private MonoInstaller[] monoInstallers;
         [SerializeField] private ScriptableInstaller[] scriptableInstallers;
 
-        [SerializeField] private ContainersConfiguration configuration;
+        [SerializeField] private ContainersSettingsProvider settingsProvider;
 
         private static DIContainer source;
 
@@ -26,10 +26,10 @@ namespace EXRContainer {
         }
 
         private void Initialize() {
-            var builder = CreateBuilder();
+            var codeGenerationConfig = CreateCodeGenerationConfig();
+            var builder = CreateBuilder(codeGenerationConfig);
 
-            builder.Register<ContainersConfiguration>().FromInstance(configuration);
-            builder.Register<ProjectContainer>().FromInstance(this);
+            InstallDependencies(builder, codeGenerationConfig);
 
             foreach (var monoInstaller in monoInstallers) {
                 monoInstaller.Install(builder);
@@ -48,6 +48,12 @@ namespace EXRContainer {
             source = null;
         }
 
+        private void InstallDependencies(ContainerBuilder builder, CodeGenerationConfiguration codeGenerationConfig) {
+            builder.Register<CodeGenerationConfiguration>().FromInstance(codeGenerationConfig);
+            builder.Register<ContainersSettingsProvider>().FromInstance(settingsProvider);
+            builder.Register<ProjectContainer>().FromInstance(this);
+        }
+
         public static T Resolve<T>() {
             if (source == null) {
                 throw new NullReferenceException("Project container has not been created yet!");
@@ -56,13 +62,10 @@ namespace EXRContainer {
             return (T)source.Resolve(typeof(T));
         }
 
-        private ContainerBuilder CreateBuilder() {
+        private ContainerBuilder CreateBuilder(CodeGenerationConfiguration codeGenerationConfig) {
             var dependenciesConfig = new DependenciesConfiguration(
-                configuration.DefaultLifeTime, configuration.NonLazyCreation);
-            var codeGenerationConfig = CreateCodeGenerationConfig();
+                settingsProvider.GlobalContainerSettings.DefaultLifeTime, settingsProvider.GlobalContainerSettings.NonLazyCreation);
             var builder = new ContainerBuilder(null, dependenciesConfig, codeGenerationConfig);
-
-            builder.Register<CodeGenerationConfiguration>().FromInstance(codeGenerationConfig);
 
             return builder;
         }
@@ -82,7 +85,7 @@ namespace EXRContainer {
             FinalizationLambdaCreator finalizationCreator) {
             factoryCreator.CreationProvider(new CreationByConstructor());
 
-            var globalSettings = configuration.GlobalContainerSettings;
+            var globalSettings = settingsProvider.GlobalContainerSettings;
 
             if (globalSettings.EventBus) {
                 // factoryCreator.WithSuccessor(new EventBusSubscriber())

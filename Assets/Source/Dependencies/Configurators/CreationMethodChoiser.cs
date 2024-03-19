@@ -14,7 +14,8 @@ namespace EXRContainer.Dependencies {
         }
 
         public IWithoutCreationCallbacksCompleteChoiser<TService> FromInstance(TService service) {
-            throw new NotImplementedException();
+            data.Instance = service;
+            return this;
         }
     }
 }

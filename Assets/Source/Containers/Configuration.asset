@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Configuration
   m_EditorClassIdentifier: 
   <GlobalContainerSettings>k__BackingField:
+    <DefaultLifeTime>k__BackingField: 0
+    <NonLazyCreation>k__BackingField: 1
     <EventBus>k__BackingField: 1
     <UpdateCallbacks>k__BackingField: 1
   <EntityContainerSettings>k__BackingField:
+    <DefaultLifeTime>k__BackingField: 1
+    <NonLazyCreation>k__BackingField: 0
     <TriggerCallbacks>k__BackingField: 1
     <CollisionCallbacks>k__BackingField: 1
-  <DefaultLifeTime>k__BackingField: 1
-  <NonLazyCreation>k__BackingField: 0
