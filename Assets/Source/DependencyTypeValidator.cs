@@ -5,7 +5,7 @@ namespace EXRContainer {
     internal static class DependencyTypeValidator {
         private static readonly HashSet<Type> invalidTypes = new();
 
-        public static void MakeInvalid<T>() => invalidTypes.Add(typeof(T));
+        public static void MakeInvalid<T>() where T : class => invalidTypes.Add(typeof(T));
 
         public static void ValidateContractType(Type contract) {
             AssertTypeForUsable(contract);

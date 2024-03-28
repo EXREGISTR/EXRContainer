@@ -15,8 +15,6 @@ namespace EXRContainer.CodeGeneration.Providers {
             yield return instantiateExpression;
         }
 
-        public IEnumerable<ParameterExpression> GetVariables() {
-            return Enumerable.Empty<ParameterExpression>();
-        }
+        public IEnumerable<ParameterExpression> GetVariables() => Enumerable.Empty<ParameterExpression>();
     }
 }

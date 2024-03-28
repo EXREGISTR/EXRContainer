@@ -7,12 +7,21 @@ using UnityEngine;
 namespace EXRContainer {
     [DefaultExecutionOrder(int.MinValue)]
     public sealed class ProjectContainer : MonoBehaviour {
-        [SerializeField] private MonoInstaller[] monoInstallers;
-        [SerializeField] private ScriptableInstaller[] scriptableInstallers;
+        [SerializeField] private Installer[] installers;
 
         [SerializeField] private ContainersSettingsProvider settingsProvider;
 
         private static DIContainer source;
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void BeforeInitialization() {
+            DependencyTypeValidator.MakeInvalid<DependenciesContext>();
+            DependencyTypeValidator.MakeInvalid<IDIContext>();
+            DependencyTypeValidator.MakeInvalid<DIContainer>();
+            DependencyTypeValidator.MakeInvalid<IDIContainer>();
+            DependencyTypeValidator.MakeInvalid<SinglesStack>();
+            DependencyTypeValidator.MakeInvalid<IDependency>();
+        }
 
         private void Awake() {
             if (source != null) {
@@ -31,12 +40,8 @@ namespace EXRContainer {
 
             InstallDependencies(builder, codeGenerationConfig);
 
-            foreach (var monoInstaller in monoInstallers) {
+            foreach (var monoInstaller in installers) {
                 monoInstaller.Install(builder);
-            }
-
-            foreach (var scriptableInstaller in scriptableInstallers) {
-                scriptableInstaller.Install(builder);
             }
 
             source = builder.Build();
@@ -71,7 +76,7 @@ namespace EXRContainer {
         }
 
         private CodeGenerationConfiguration CreateCodeGenerationConfig() {
-            var factoryCreator = new FactoryLambdaCreator();
+            var factoryCreator = new FactoryLambdaCreator(new CreationByConstructor());
             var finalizationCreator = new FinalizationLambdaCreator();
 
             ConfigurateLambdaCreators(factoryCreator, finalizationCreator);
@@ -79,11 +84,11 @@ namespace EXRContainer {
             var data = new CodeGenerationConfiguration(factoryCreator, finalizationCreator);
             return data;
         }
+
         // ЗАКОНЧИТЬ БАЛЯ
         private void ConfigurateLambdaCreators(
             FactoryLambdaCreator factoryCreator, 
             FinalizationLambdaCreator finalizationCreator) {
-            factoryCreator.CreationProvider(new CreationByConstructor());
 
             var globalSettings = settingsProvider.GlobalContainerSettings;
 

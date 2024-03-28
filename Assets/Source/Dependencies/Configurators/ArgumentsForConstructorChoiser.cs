@@ -1,8 +1,19 @@
-﻿namespace EXRContainer.Dependencies {
+﻿using System.Collections.Generic;
+using System;
+using EXRContainer.Core;
+
+namespace EXRContainer.Dependencies {
     public partial class DependencyConfigurator<TService> : IArgumentsChoiser<TService> {
         public ICallbacksChoiser<TService> WithArguments<T>(T argument) {
             var type = typeof(T);
-            data.Arguments.Add(type, argument);
+
+            if (data.Arguments == null) {
+                data.Arguments = new Dictionary<Type, object> { { type, argument } };
+            } else {
+                var result = data.Arguments.TryAdd(type, argument);
+                if (!result) throw new AlreadyRegisteredDependencyException(type, "local arguments");
+            }
+
 
             return this;
         }

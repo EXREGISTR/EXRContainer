@@ -16,7 +16,11 @@ namespace EXRContainer {
         public ILambdaCreator<Factory<object>> DefaultFactoryCreator => defaultFactoryCreator;
         public ILambdaCreator<Finalizator<object>> DefaultFinalizatorCreator => defaultFinalizatorCreator;
 
-        public FactoryLambdaCreator CopyFactoryCreator => new(defaultFactoryCreator);
-        public FinalizationLambdaCreator CopyFinalizatorCreator => new(defaultFinalizatorCreator);
+
+        public FactoryLambdaCreator CreateFactoryCreator()
+            => new(defaultFactoryCreator);
+        public FactoryLambdaCreator CreateFactoryCreator(ICreationExpressionsProvider provider) 
+            => new(provider, defaultFactoryCreator);
+        public FinalizationLambdaCreator CreateFinalizatorCreator() => new(defaultFinalizatorCreator);
     }
 }

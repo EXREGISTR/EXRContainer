@@ -6,27 +6,28 @@ using EXRContainer.Core;
 namespace EXRContainer.CodeGeneration {
     internal class FactoryLambdaCreator : ILambdaCreator<Factory<object>> {
         private readonly LinkedList<IExpressionsProvider> providers;
+        private readonly LinkedListNode<IExpressionsProvider> creationNode;
 
-        public FactoryLambdaCreator() {
+        public FactoryLambdaCreator(ICreationExpressionsProvider provider) {
             providers = new LinkedList<IExpressionsProvider>();
+            creationNode = providers.AddFirst(provider);
         }
 
         public FactoryLambdaCreator(FactoryLambdaCreator other) {
+            providers = other.providers;
+            creationNode = other.creationNode;
+        }
+
+        public FactoryLambdaCreator(ICreationExpressionsProvider provider, FactoryLambdaCreator other) {
             providers = new LinkedList<IExpressionsProvider>(other.providers);
+            other.creationNode.Value = provider;
         }
 
-        public void CreationProvider(ICreationExpressionsProvider provider) {
-            if (providers.First != null) {
-                providers.First.Value = provider;
-                return;
-            }
+        public void BeforeCreationProvider(IExpressionsProvider provider) 
+            => providers.AddBefore(creationNode, provider);
 
-            providers.AddFirst(provider);
-        }
-
-        public void WithSuccessor(IExpressionsProvider provider) {
-            providers.AddLast(provider);
-        }
+        public void PostCreationProvider(IExpressionsProvider provider) 
+            => providers.AddAfter(creationNode, provider);
 
         public Factory<object> Create(Type dependencyType, LifeTime lifeTime) {
             var instanceVariable = Expression.Variable(dependencyType, $"{dependencyType.Name}");
@@ -43,11 +44,10 @@ namespace EXRContainer.CodeGeneration {
                 expressions.AddRange(provider.GenerateCode(context));
             }
 
+            expressions.Add(instanceVariable);
+
             // generated:
             // return instance;
-
-            expressions.Add(instanceVariable);
-            
 
             var block = Expression.Block(variables, expressions);
             var lambda = Expression.Lambda<Factory<object>>(block, contextParameter);

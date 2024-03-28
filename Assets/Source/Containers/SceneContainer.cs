@@ -4,8 +4,7 @@ using UnityEngine;
 namespace EXRContainer {
     [DefaultExecutionOrder(int.MinValue + 1)]
     public sealed class SceneContainer : MonoBehaviour {
-        [SerializeField] private MonoInstaller[] monoInstallers;
-        [SerializeField] private ScriptableInstaller[] scriptableInstallers;
+        [SerializeField] private Installer[] installers;
         [SerializeField] private EntityContainer[] entityContainers;
 
         private static DIContainer source;
@@ -43,12 +42,10 @@ namespace EXRContainer {
         private void InstallDependencies(ContainerBuilder builder) {
             builder.Register<SceneContainer>().FromInstance(this);
 
-            foreach (var monoInstaller in monoInstallers) {
-                monoInstaller.Install(builder);
-            }
+            if (installers == null) return;
 
-            foreach (var scriptableInstaller in scriptableInstallers) {
-                scriptableInstaller.Install(builder);
+            foreach (var monoInstaller in installers) {
+                monoInstaller.Install(builder);
             }
         }
 

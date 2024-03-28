@@ -14,7 +14,14 @@ namespace EXRContainer.Dependencies {
     }
 
     internal class DependencyCreationData<TService> : IDependencyCreationData where TService : class {
-        public Type ConcreteType { get; } = typeof(TService);
+        public DependencyCreationData(CodeGenerationConfiguration config) {
+            CodeGenerationConfiguration = config;
+            ConcreteType = typeof(TService);
+        }
+
+        public CodeGenerationConfiguration CodeGenerationConfiguration { get; }
+        public Type ConcreteType { get; }
+
         public object Instance { get; set; }
         public LifeTime LifeTime { get; set; }
         public bool NonLazy { get; set; }

@@ -57,11 +57,12 @@ namespace EXRContainer {
         public DIContainer Build() {
             List<DependencyProvider> nonLazySingletons = null;
             List<DependencyProvider> scopedNonLazy = null;
-            Dictionary<Type, DependencyProvider> dependencies = null;
+            var dependencies = new Dictionary<Type, DependencyProvider>();
 
-            foreach (var data in dependenciesData) {
+            foreach (IDependencyCreationData data in dependenciesData) {
                 var provider = CreateDependencyProvider(data);
                 if (data.NonLazy) PlaceNonLazy(provider);
+                dependencies.TryAdd();
             }
 
             var container = new DIContainer(dependencies, nonLazySingletons, scopedNonLazy, parent);

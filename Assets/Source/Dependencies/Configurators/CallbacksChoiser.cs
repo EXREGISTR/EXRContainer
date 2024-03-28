@@ -5,18 +5,22 @@ namespace EXRContainer.Dependencies {
         IWithoutCreationCallbacksChoiser<TService>, IWithoutCreationCallbacksCompleteChoiser<TService> {
         
         public ICallbacksChoiser<TService> PostInstantiate(PostCreationCallback<TService> callback) {
+            data.PostCreationCallback = callback;
             return this;
         }
 
         public ICallbacksChoiser<TService> PreInstantiate(PreCreationCallback callback) {
+            data.PreCreationCallback = callback;
             return this;
         }
 
         public ICallbacksChoiser<TService> OnResolve(OnResolve<TService> callback) {
+            data.OnResolveCallback = instance => callback((TService)instance);
             return this;
         }
 
         public ICallbacksChoiser<TService> OnFinalize(Finalizator<TService> callback) {
+            data.Finalizator = (context, instance) => callback(context, (TService)instance); ;
             return this;
         }
 
