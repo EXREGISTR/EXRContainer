@@ -21,6 +21,7 @@ namespace EXRContainer {
             DependencyTypeValidator.MakeInvalid<IDIContainer>();
             DependencyTypeValidator.MakeInvalid<SinglesStack>();
             DependencyTypeValidator.MakeInvalid<IDependency>();
+            DependencyTypeValidator.MakeInvalid<GameObject>();
         }
 
         private void Awake() {
@@ -93,8 +94,8 @@ namespace EXRContainer {
             var globalSettings = settingsProvider.GlobalContainerSettings;
 
             if (globalSettings.EventBus) {
-                // factoryCreator.WithSuccessor(new EventBusSubscriber())
-                // finalizationCreator.LastProvider(new EventBusUnsubscriber());
+                factoryCreator.PostCreationProvider(new SubscribeOnEvents());
+                finalizationCreator.LastProvider(new UnsubscribeFromEvents());
             }
 
             if (globalSettings.UpdateCallbacks) {

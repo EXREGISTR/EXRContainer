@@ -1,4 +1,5 @@
 ﻿using EXRContainer.CodeGeneration;
+using EXRContainer.CodeGeneration.Providers;
 using EXRContainer.Core;
 using UnityEngine;
 
@@ -24,9 +25,13 @@ namespace EXRContainer {
         private void OnDestroy() => source?.Dispose();
 
         private void InstallDependencies(ContainerBuilder builder) {
-            builder.Register<GameObject>().FromPrefab(prefab).AsScoped();
-            builder.Register<Entity>().FromNewComponentOnGameObject().AsScoped();
+            builder.Register<Entity>().FromNewComponentOnPrefab(prefab)
+                .PostInstantiate(CreateDetectors)
+                .NonLazy().AsScoped();
         }
+
+        // а может не надо
+        protected virtual void CreateDetectors(IDIContext context, Entity entity) { }
 
         protected abstract void Install(ContainerBuilder builder);
 
@@ -41,19 +46,18 @@ namespace EXRContainer {
             return data;
         }
 
-        // ЗАКОНЧИТЬ БАЛЯ
         private void ConfigurateLambdaCreators(
             FactoryLambdaCreator factoryCreator,
             FinalizationLambdaCreator finalizationCreator,
             EntityContainerSettings settings) {
             if (settings.TriggerCallbacks) {
-                // factoryCreator.PostCreationProvider();
-                // finalizationCreator.LastProvider();
+                factoryCreator.PostCreationProvider(new SubscribeOnTriggerCallbacks());
+                finalizationCreator.LastProvider(new UnsubscribeOfTriggerCallbacks());
             }
 
             if (settings.CollisionCallbacks) {
-                // factoryCreator.PostCreationProvider();
-                // finalizationCreator.LastProvider();
+                factoryCreator.PostCreationProvider(new SubscribeOnCollisionCallbacks());
+                finalizationCreator.LastProvider(new UnsubscribeOfCollisionCallbacks());
             }
         }
     }

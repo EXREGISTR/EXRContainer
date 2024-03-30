@@ -1,9 +1,9 @@
 ﻿namespace EXRContainer {
-    public interface IUpdateHandler {
+    public interface IUpdatable {
         public void Update();
     }
 
-    public interface IFixedUpdateHandler {
+    public interface IFixedUpdatable {
         public void FixedUpdate();
     }
 }

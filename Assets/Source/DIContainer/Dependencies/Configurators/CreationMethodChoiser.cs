@@ -1,25 +1,17 @@
 ﻿using EXRContainer.CodeGeneration.Providers;
 using EXRContainer.Core;
 using System;
+using UnityEngine;
 
 namespace EXRContainer.Dependencies {
     public partial class DependencyConfigurator<TService> : ICreationMethodChoiser<TService> {
-        public IWithoutCreationCallbacksChoiser<TService> FromComponentOnGameObject(bool inChildren = false) {
-            var factoryCreator = codeGenerationData.CreateFactoryCreator(new CreationFromComponentOnGameObject());
-            data.Factory = factoryCreator.Create();
-        }
-
-        public IArgumentsChoiser<TService> FromConstructor() {
-
-            throw new NotImplementedException();
-        }
-
         public IWithoutCreationCallbacksChoiser<TService> FromFactory(Factory<TService> factory) {
             data.Factory = factory;
 
             data.CreatorProvider = static data => {
                 var lambdaCreator = data.CodeGenerationConfiguration.CreateFactoryCreator(
                     new CreationByCallback<TService>(data.Factory));
+
                 return new FactoryDependencyCreator(data.LifeTime, data.ConcreteType, lambdaCreator);
             };
 
@@ -32,12 +24,26 @@ namespace EXRContainer.Dependencies {
             return this;
         }
 
-        public IWithoutCreationCallbacksChoiser<TService> FromNewComponentOnGameObject() {
-            throw new NotImplementedException();
+        public ICallbacksChoiser<TService> FromComponentOnPrefab(GameObject prefab, bool findInChildren = false) {
+            data.CreatorProvider = data => {
+                var lambdaCreator = data.CodeGenerationConfiguration.CreateFactoryCreator(
+                    new CreationFromComponentOnPrefab(prefab, createNewComponent: false, findInChildren));
+
+                return new FactoryDependencyCreator(data.LifeTime, data.ConcreteType, lambdaCreator);
+            };
+
+            return this;
         }
 
-        public IWithoutCreationCallbacksChoiser<TService> FromPrefab(TService service) {
-            throw new NotImplementedException();
+        public ICallbacksChoiser<TService> FromNewComponentOnPrefab(GameObject prefab) {
+            data.CreatorProvider = data => {
+                var lambdaCreator = data.CodeGenerationConfiguration.CreateFactoryCreator(
+                    new CreationFromComponentOnPrefab(prefab, createNewComponent: true, shouldFindInChildren: false));
+
+                return new FactoryDependencyCreator(data.LifeTime, data.ConcreteType, lambdaCreator);
+            };
+
+            return this;
         }
     }
 }

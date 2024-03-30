@@ -62,7 +62,13 @@ namespace EXRContainer {
             foreach (IDependencyCreationData data in dependenciesData) {
                 var provider = CreateDependencyProvider(data);
                 if (data.NonLazy) PlaceNonLazy(provider);
-                dependencies.TryAdd();
+
+                if (data.ContractTypes != null) {
+                    foreach (var contract in data.ContractTypes) {
+                        var result = dependencies.TryAdd(contract, provider);
+                        if (!result) throw new AlreadyRegisteredDependencyException(contract, "container builder");
+                    }
+                }
             }
 
             var container = new DIContainer(dependencies, nonLazySingletons, scopedNonLazy, parent);
@@ -99,7 +105,7 @@ namespace EXRContainer {
         }
 
         private DependencyCreationData<TService> CreateDependencyData<TService>() where TService : class {
-            var data = new DependencyCreationData<TService> {
+            var data = new DependencyCreationData<TService>(codeGenerationData) {
                 LifeTime = config.DefaultLifeTime,
                 NonLazy = config.NonLazyCreationByDefault,
             };
