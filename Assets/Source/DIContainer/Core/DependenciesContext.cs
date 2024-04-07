@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace EXRContainer.Core {
-    public class DependenciesContext : IDIContext {
+    internal class DependenciesContext : IDIContext, IDisposable {
         private readonly DIContainer container;
         private readonly Dictionary<Type, object> localObjects;
 
@@ -15,6 +15,7 @@ namespace EXRContainer.Core {
 
         private void RegisterContext() {
             localObjects[typeof(IDIContext)] = this;
+            localObjects[typeof(DependenciesContext)] = this;
         }
 
         public void AddDependency<T>(T instance, IEnumerable<Type> contractTypes) {

@@ -45,5 +45,9 @@ namespace EXRContainer.Dependencies {
 
             return this;
         }
+
+        public ICallbacksChoiser<TService> FromComponentOnPrefab(GameObject prefab) {
+            throw new NotImplementedException();
+        }
     }
 }

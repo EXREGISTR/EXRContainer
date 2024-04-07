@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 namespace EXRContainer.Events {
-    public readonly struct CollisionEnterMessage {
+    public readonly struct CollisionEnterMessage : IMessage {
         public Collision Collision { get; }
         public Entity Sender { get; }
 
@@ -11,7 +11,7 @@ namespace EXRContainer.Events {
         }
     }
 
-    public readonly struct CollisionStayMessage {
+    public readonly struct CollisionStayMessage : IMessage {
         public Collision Collision { get; }
         public Entity Sender { get; }
 
@@ -21,7 +21,7 @@ namespace EXRContainer.Events {
         }
     }
 
-    public readonly struct CollisionExitMessage {
+    public readonly struct CollisionExitMessage : IMessage {
         public Collision Collision { get; }
         public Entity Sender { get; }
 

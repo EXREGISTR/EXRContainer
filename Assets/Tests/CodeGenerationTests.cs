@@ -1,21 +1,29 @@
-﻿using EXRContainer.CodeGeneration;
+﻿using EXRContainer;
+using EXRContainer.CodeGeneration;
 using EXRContainer.CodeGeneration.Providers;
 using EXRContainer.Core;
 using UnityEngine;
 
 namespace Tests {
     public class CodeGenerationTests : MonoBehaviour {
+        [ContextMenu("Create player")]
+        public void CreatePlayer() {
+            var factory = CreatePlayerControllerFactory(null);
+            factory(GetContext());
+        }
+
         private Factory<object> CreatePlayerControllerFactory(FactoryLambdaCreator other) {
             var creator = new FactoryLambdaCreator(
-                new CreationByCallback<PlayerController>(context => new PlayerController())
+                new CreationByConstructor()
             );
 
-            PreCreationCallback callback = context => {
-                new GameObject();
-                Debug.Log("Ща чета будет");
-            };
+            creator.BeforeCreationProvider(new PreCreationInvokation(context => Debug.Log("Ща чета будет")));
 
-            creator.BeforeCreationProvider(new PreCreationInvokation(callback));
+            creator.PostCreationProvider(new PostCreationInvokation<PlayerController>(
+                (context, controller) => {
+                    controller.Meow();
+                    new GameObject(controller.GetType().Name + controller.GetHashCode());
+                }));
 
             return creator.Create(typeof(PlayerController), LifeTime.Scoped);
         }
@@ -28,5 +36,20 @@ namespace Tests {
 
     internal class PlayerController {
 
+        public PlayerController(IDIContext context) {
+            context.Dispose();
+        }
+
+        [EXRConstructor]
+        public PlayerController() {
+            
+        }
+
+        [EXRConstructor]
+        private void Construct() {
+
+        }
+
+        public void Meow() { }
     }
 }

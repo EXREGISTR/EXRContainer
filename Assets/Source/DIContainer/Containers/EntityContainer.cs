@@ -31,7 +31,9 @@ namespace EXRContainer {
         }
 
         // а может не надо
-        protected virtual void CreateDetectors(IDIContext context, Entity entity) { }
+        protected virtual void CreateDetectors(IDIContext context, Entity entity) {
+            // entity.CreateDetector<>
+        }
 
         protected abstract void Install(ContainerBuilder builder);
 

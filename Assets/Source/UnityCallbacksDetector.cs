@@ -14,6 +14,9 @@ namespace EXRContainer {
 
             Entity = entity;
             EventsService = eventsService;
+            PostInitialize();
         }
+
+        protected virtual void PostInitialize() { }
     }
 }

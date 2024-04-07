@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace EXRContainer.Events {
     public class MessageHasNotHandlers : Exception {
@@ -9,38 +8,57 @@ namespace EXRContainer.Events {
     }
 
     public sealed class EventsService : IDisposable {
-        private readonly Dictionary<Type, IMessageHandlersList> messageHandlers;
+        private class HandlersCollectionWrapper {
+            public IMessageHandlersCollection Collection { get; }
+            public Ac
+        }
 
-        public void RegisterHandler<TMessage>(IMessageHandler<TMessage> handler) {
-            var messageType = typeof(TMessage);
+        private readonly Dictionary<Type, IMessageHandlersCollection> messageHandlers = new();
+
+        public void Subscribe<T>(IMessageHandler<T> handler) where T : IMessage {
+            var messageType = typeof(T);
             if (messageHandlers.TryGetValue(messageType, out var list)) {
-                ConvertCollection<TMessage>(list).Push(handler);
+                ((MessageHandlersCollection<T>)list).Push(handler);
                 return;
             }
 
-            var handlers = new MessageHandlersList<TMessage>();
+            var handlers = new MessageHandlersCollection<T>();
             handlers.Push(handler);
 
             messageHandlers[messageType] = handlers;
         }
 
-        public void UnregisterHandler<TMessage>(IMessageHandler<TMessage> handler) {
-            var messageType = typeof(TMessage);
+        public void Unsubscribe<T>(IMessageHandler<T> handler) where T : IMessage {
+            var messageType = typeof(T);
             if (!messageHandlers.TryGetValue(messageType, out var list)) return;
 
-            ConvertCollection<TMessage>(list).Delete(handler);
+            ((MessageHandlersCollection<T>)list).Delete(handler);
         }
 
-        /// <typeparam name="TMessage"></typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <param name="message"></param>
         /// <exception cref="MessageHasNotHandlers"></exception>
-        public void SendMessage<TMessage>(TMessage message) {
-            var messageType = typeof(TMessage);
+        public void Notify<T>(T message, bool throwIfNoHandlers = true) where T : IMessage {
+            var messageHandlers = GetMessageHandlers<T>(throwIfNoHandlers);
+            if (messageHandlers == null) return;
+
+            messageHandlers.Notify(message);
+        }
+
+        public IMessageHandlersCollection<T> GetMessageHandlers<T>(bool createIfNoHandlers = false,
+            bool throwIfNoHandlers = true) where T : IMessage {
+            var messageType = typeof(T);
             if (!messageHandlers.TryGetValue(messageType, out var list)) {
-                throw new MessageHasNotHandlers(messageType);
+                if (createIfNoHandlers) {
+                    var handlers = new MessageHandlersCollection<T>();
+                    messageHandlers[messageType] = handlers;
+                    return handlers;
+                }
+
+                return throwIfNoHandlers ? throw new MessageHasNotHandlers(messageType) : null;
             }
 
-            ConvertCollection<TMessage>(list).Send(message);
+            return (IMessageHandlersCollection<T>)list;
         }
 
         public void Dispose() {
@@ -48,9 +66,5 @@ namespace EXRContainer.Events {
                 collection.Clear();
             }
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static MessageHandlersList<T> ConvertCollection<T>(IMessageHandlersList list) 
-            => (MessageHandlersList<T>)list;
     }
 }

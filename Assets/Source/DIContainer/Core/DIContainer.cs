@@ -222,6 +222,7 @@ namespace EXRContainer.Core {
             foreach (var context in contexts.Values) {
                 context.Dispose();
             }
+
             contexts.Clear();
             contexts = null;
 

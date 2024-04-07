@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 namespace EXRContainer.Events {
-    public readonly struct TriggerEnterMessage {
+    public readonly struct TriggerEnterMessage : IMessage {
         public Collider Collider { get; }
         public Entity Sender { get; }
 
@@ -11,7 +11,7 @@ namespace EXRContainer.Events {
         }
     }
 
-    public readonly struct TriggerStayMessage {
+    public readonly struct TriggerStayMessage : IMessage {
         public Collider Collider { get; }
         public Entity Sender { get; }
 
@@ -21,7 +21,7 @@ namespace EXRContainer.Events {
         }
     }
 
-    public readonly struct TriggerExitMessage {
+    public readonly struct TriggerExitMessage : IMessage {
         public Collider Collider { get; }
         public Entity Sender { get; }
 

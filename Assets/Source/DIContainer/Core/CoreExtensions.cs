@@ -3,6 +3,7 @@ using EXRContainer.Core;
 
 namespace EXRContainer {
     public static class CoreExtensions {
+        public static T Resolve<T>(this IDIContext source) => (T)source.Resolve(typeof(T));
         public static void AddDependency<T>(this IDIContext source, T instance) {
             source.AddDependency(instance, null);
         }
