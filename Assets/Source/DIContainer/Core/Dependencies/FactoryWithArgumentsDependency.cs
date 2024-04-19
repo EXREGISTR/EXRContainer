@@ -38,8 +38,6 @@ namespace EXRContainer.Core {
             public void AddDependency<T>(T instance, IEnumerable<Type> contractTypes) => parent.AddDependency(instance, contractTypes);
 
             public void Delete(object instance) => parent.Delete(instance);
-
-            public void Dispose() => parent.Dispose();
         }
     }
 }

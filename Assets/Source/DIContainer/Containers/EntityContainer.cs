@@ -1,5 +1,4 @@
-﻿using EXRContainer.CodeGeneration;
-using EXRContainer.CodeGeneration.Providers;
+﻿using EXRContainer.LambdaGeneration;
 using EXRContainer.Core;
 using UnityEngine;
 
@@ -49,17 +48,17 @@ namespace EXRContainer {
         }
 
         private void ConfigurateLambdaCreators(
-            FactoryLambdaCreator factoryCreator,
-            FinalizationLambdaCreator finalizationCreator,
+            FactoryGenerator factoryCreator,
+            FinalizatorGenerator finalizationCreator,
             EntityContainerSettings settings) {
             if (settings.TriggerCallbacks) {
-                factoryCreator.PostCreationProvider(new SubscribeOnTriggerCallbacks());
-                finalizationCreator.LastProvider(new UnsubscribeOfTriggerCallbacks());
+                // factoryCreator.PostCreationProvider(new SubscribeOnTriggerCallbacks());
+                // finalizationCreator.LastProvider(new UnsubscribeOfTriggerCallbacks());
             }
 
             if (settings.CollisionCallbacks) {
-                factoryCreator.PostCreationProvider(new SubscribeOnCollisionCallbacks());
-                finalizationCreator.LastProvider(new UnsubscribeOfCollisionCallbacks());
+                // factoryCreator.PostCreationProvider(new SubscribeOnCollisionCallbacks());
+                // finalizationCreator.LastProvider(new UnsubscribeOfCollisionCallbacks());
             }
         }
     }

@@ -2,7 +2,7 @@
 using EXRContainer.Core;
 
 namespace EXRContainer.LambdaGeneration {
-    internal static class ExpressionsCache {
+    internal static class ExpressionsConstants {
         public static readonly ParameterExpression ObjectParameter = 
             Expression.Parameter(typeof(object), "object_exr");
 

@@ -2,5 +2,5 @@
 
 namespace EXRContainer {
     [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method)]
-    internal class EXRConstructorAttribute : Attribute { }
+    public class EXRInitializatorAttribute : Attribute { }
 }

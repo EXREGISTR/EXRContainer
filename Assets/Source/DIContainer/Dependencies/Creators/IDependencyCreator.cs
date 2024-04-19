@@ -1,4 +1,4 @@
-﻿using EXRContainer.CodeGeneration;
+﻿using EXRContainer.LambdaGeneration;
 using EXRContainer.Core;
 using System;
 
@@ -6,9 +6,9 @@ namespace EXRContainer.Dependencies {
     public class FactoryDependencyCreator : IDependencyCreator {
         private readonly LifeTime lifeTime;
         private readonly Type dependencyType;
-        private readonly FactoryLambdaCreator lambdaCreator;
+        private readonly FactoryGenerator lambdaCreator;
 
-        internal FactoryDependencyCreator(LifeTime lifeTime, Type dependencyType, FactoryLambdaCreator lambdaCreator) {
+        internal FactoryDependencyCreator(LifeTime lifeTime, Type dependencyType, FactoryGenerator lambdaCreator) {
             this.lifeTime = lifeTime;
             this.dependencyType = dependencyType;
             this.lambdaCreator = lambdaCreator;

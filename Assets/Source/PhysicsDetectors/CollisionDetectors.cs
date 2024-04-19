@@ -49,7 +49,7 @@ namespace EXRContainer {
             if (condition != null && !condition(collision)) return;
 
             var message = new CollisionStayMessage(collision, Entity);
-            EventsService.SendMessage(message);
+            EventsService.Notify(message);
         }
     }
 }

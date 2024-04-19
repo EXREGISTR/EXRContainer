@@ -1,7 +1,7 @@
 ﻿using EXRContainer.Core;
 
 namespace EXRContainer.Dependencies {
-    public partial class DependencyConfigurator<TService> : ICallbacksChoiser<TService>, 
+    internal partial class DependencyConfigurator<TService> : ICallbacksChoiser<TService>, 
         IWithoutCreationCallbacksChoiser<TService>, IWithoutCreationCallbacksCompleteChoiser<TService> {
         
         public ICallbacksChoiser<TService> PostInstantiate(PostCreationCallback<TService> callback) {

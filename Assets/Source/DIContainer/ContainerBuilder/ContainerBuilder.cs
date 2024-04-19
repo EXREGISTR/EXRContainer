@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using EXRContainer.Core;
 using EXRContainer.Dependencies;
+using EXRContainer.Helpers;
 
 namespace EXRContainer {
     public sealed class ContainerBuilder {
@@ -54,7 +55,7 @@ namespace EXRContainer {
             => Register<TService>(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6));
         #endregion
 
-        public DIContainer Build() {
+        internal DIContainer Build() {
             List<DependencyProvider> nonLazySingletons = null;
             List<DependencyProvider> scopedNonLazy = null;
             var dependencies = new Dictionary<Type, DependencyProvider>();

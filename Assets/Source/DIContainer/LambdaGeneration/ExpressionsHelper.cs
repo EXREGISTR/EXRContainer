@@ -7,7 +7,14 @@ using EXRContainer.Core;
 
 namespace EXRContainer.LambdaGeneration {
     public partial class ExpressionsHelper {
+        private static readonly MethodInfo addDependencyMethod = typeof(IDIContext).GetMethod("AddDependency");
         private static readonly MethodInfo resolveMethod = typeof(IDIContext).GetMethod("Resolve")!;
+
+        public static MethodCallExpression DescribeAddDependencyToContext(
+            ParameterExpression context, ParameterExpression variable) {
+            var method = addDependencyMethod.MakeGenericMethod(variable.Type);
+            return Expression.Call(context, method, variable);
+        }
 
         public static UnaryExpression DescribeResolving(ParameterExpression context, Type dependencyType) {
             var dependencyExpression = Expression.Constant(dependencyType);

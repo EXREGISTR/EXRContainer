@@ -1,5 +1,4 @@
-﻿using EXRContainer.CodeGeneration;
-using EXRContainer.CodeGeneration.Providers;
+﻿using EXRContainer.LambdaGeneration;
 using EXRContainer.Core;
 using System;
 using UnityEngine;
@@ -13,14 +12,7 @@ namespace EXRContainer {
 
         private static DIContainer source;
 
-        [RuntimeInitializeOnLoadMethod]
-        private static void BeforeInitialization() {
-            DependencyTypeValidator.MakeInvalid<DependenciesContext>();
-            DependencyTypeValidator.MakeInvalid<IDIContext>();
-            DependencyTypeValidator.MakeInvalid<DIContainer>();
-            DependencyTypeValidator.MakeInvalid<IDIContainer>();
-            DependencyTypeValidator.MakeInvalid<SinglesStack>();
-            DependencyTypeValidator.MakeInvalid<IDependency>();
+        static ProjectContainer() {
             DependencyTypeValidator.MakeInvalid<GameObject>();
         }
 
@@ -77,8 +69,8 @@ namespace EXRContainer {
         }
 
         private CodeGenerationConfiguration CreateCodeGenerationConfig() {
-            var factoryCreator = new FactoryLambdaCreator(new CreationByConstructor());
-            var finalizationCreator = new FinalizationLambdaCreator();
+            var factoryCreator = new FactoryGenerator(new ConstructorCreation());
+            var finalizationCreator = new FinalizatorGenerator();
 
             ConfigurateLambdaCreators(factoryCreator, finalizationCreator);
 
@@ -88,14 +80,14 @@ namespace EXRContainer {
 
         // ЗАКОНЧИТЬ БАЛЯ
         private void ConfigurateLambdaCreators(
-            FactoryLambdaCreator factoryCreator, 
-            FinalizationLambdaCreator finalizationCreator) {
+            FactoryGenerator factoryCreator, 
+            FinalizatorGenerator finalizationCreator) {
 
             var globalSettings = settingsProvider.GlobalContainerSettings;
 
             if (globalSettings.EventBus) {
-                factoryCreator.PostCreationProvider(new SubscribeOnEvents());
-                finalizationCreator.LastProvider(new UnsubscribeFromEvents());
+                // factoryCreator.PostCreationProvider(new SubscribeOnEvents());
+                // finalizationCreator.LastProvider(new UnsubscribeFromEvents());
             }
 
             if (globalSettings.UpdateCallbacks) {

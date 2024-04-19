@@ -2,14 +2,14 @@
 using EXRContainer.Events;
 
 namespace EXRContainer.LambdaGeneration {
-    public class SubscribeToEventsService : IExpressionsProvider {
+    public class SubscribeToEventsService : IExpressionsProvider, IVariablesRegistrationProvider {
         private static readonly ParameterExpression eventBus 
             = Expression.Parameter(typeof(EventsService), "eventsService");
 
-        public void Execute(IGenerationContext context) {
+        public void RegisterExpressions(IGenerationContext context) {
         }
 
-        public void RegisterVariables(IContextVariablesRegistrator registrator) 
-            => registrator.WithVariableFromContext(eventBus);
+        public void RegisterVariables(IVariablesRegistrator registrator) 
+            => registrator.RegisterVariableFromContext(eventBus);
     }
 }

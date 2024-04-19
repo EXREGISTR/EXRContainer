@@ -2,6 +2,6 @@
 
 namespace EXRContainer {
     public abstract class Installer : MonoBehaviour {
-        public abstract void Install(ContainerBuilder builder);
+        internal abstract void Install(ContainerBuilder builder);
     }
 }

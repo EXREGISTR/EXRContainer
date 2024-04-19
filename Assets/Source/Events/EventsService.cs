@@ -10,7 +10,7 @@ namespace EXRContainer.Events {
     public sealed class EventsService : IDisposable {
         private class HandlersCollectionWrapper {
             public IMessageHandlersCollection Collection { get; }
-            public Ac
+            
         }
 
         private readonly Dictionary<Type, IMessageHandlersCollection> messageHandlers = new();

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace EXRContainer.Dependencies {
-    public partial class DependencyConfigurator<TService> : IContractTypeChoiser<TService>, ISelfContractTypeChoiser<TService> {
+    internal partial class DependencyConfigurator<TService> : IContractTypeChoiser<TService>, ISelfContractTypeChoiser<TService> {
         public ICreationMethodChoiser<TService> ForSelf() {
             data.ContractTypes ??= new HashSet<Type>();
             data.ContractTypes.Add(typeof(TService));

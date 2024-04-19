@@ -1,5 +1,5 @@
 ﻿namespace EXRContainer.Dependencies {
-    public partial class DependencyConfigurator<TService> : ILazyCreationChoiser {
+    internal partial class DependencyConfigurator<TService> : ILazyCreationChoiser {
         public ILifeTimeChoiser Lazy() {
             data.NonLazy = false;
             return this;

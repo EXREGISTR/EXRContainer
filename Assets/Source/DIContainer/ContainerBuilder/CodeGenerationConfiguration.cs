@@ -1,14 +1,17 @@
-﻿using EXRContainer.CodeGeneration;
+﻿using EXRContainer.LambdaGeneration;
 using EXRContainer.Core;
 
 namespace EXRContainer {
     internal class CodeGenerationConfiguration {
-        private readonly FactoryLambdaCreator defaultFactoryCreator;
-        private readonly FinalizationLambdaCreator defaultFinalizatorCreator;
+        private readonly FactoryExpressionsContainer defaultFactoryExpressions;
+        private readonly FinalizatorExpressionsContainer defaultFinalizatorExpressions;
+
+        private readonly FactoryGenerator defaultFactoryCreator;
+        private readonly FinalizatorGenerator defaultFinalizatorCreator;
 
         public CodeGenerationConfiguration(
-            FactoryLambdaCreator defaultFactoryCreator, 
-            FinalizationLambdaCreator defaultFinalizatorCreator) {
+            FactoryGenerator defaultFactoryCreator, 
+            FinalizatorGenerator defaultFinalizatorCreator) {
             this.defaultFactoryCreator = defaultFactoryCreator;
             this.defaultFinalizatorCreator = defaultFinalizatorCreator;
         }
@@ -17,10 +20,10 @@ namespace EXRContainer {
         public ILambdaCreator<Finalizator<object>> DefaultFinalizatorCreator => defaultFinalizatorCreator;
 
 
-        public FactoryLambdaCreator CreateFactoryCreator()
-            => new(defaultFactoryCreator);
-        public FactoryLambdaCreator CreateFactoryCreator(ICreationExpressionsProvider provider) 
-            => new(provider, defaultFactoryCreator);
-        public FinalizationLambdaCreator CreateFinalizatorCreator() => new(defaultFinalizatorCreator);
+        public FactoryGenerator CreateFactoryCreator()
+            => new(defaultFactoryExpressions);
+        public FactoryGenerator CreateFactoryCreator(IDependencyInitializationProvider initializator) 
+            => new(initializator, defaultFactoryCreator);
+        public FinalizatorGenerator CreateFinalizatorCreator() => new(defaultFinalizatorCreator);
     }
 }

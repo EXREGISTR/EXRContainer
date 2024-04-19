@@ -1,7 +1,7 @@
 ﻿using EXRContainer.Core;
 
 namespace EXRContainer.Dependencies {
-    public partial class DependencyConfigurator<TService> : ILifeTimeChoiser {
+    internal partial class DependencyConfigurator<TService> : ILifeTimeChoiser {
         public void AsScoped() {
             data.LifeTime = LifeTime.Scoped;
         }

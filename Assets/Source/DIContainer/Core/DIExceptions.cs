@@ -1,6 +1,7 @@
-﻿using System;
+﻿using EXRContainer.Core;
+using System;
 
-namespace EXRContainer.Core {
+namespace EXRContainer.Helpers {
     public class AlreadyRegisteredDependencyException : Exception {
         public AlreadyRegisteredDependencyException(Type type, string senderName) 
             : base($"Dependency of source {type} already registered in {senderName}") {

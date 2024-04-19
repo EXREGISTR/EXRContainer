@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EXRContainer.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,6 +12,14 @@ namespace EXRContainer.Core {
 
         private Dictionary<IDIContext, SinglesStack> contexts;
         private bool disposedValue;
+
+        static DIContainer() {
+            DependencyTypeValidator.MakeInvalid<DependenciesContext>();
+            DependencyTypeValidator.MakeInvalid<IDIContext>();
+            DependencyTypeValidator.MakeInvalid<DIContainer>();
+            DependencyTypeValidator.MakeInvalid<IDIContainer>();
+            DependencyTypeValidator.MakeInvalid<IDependency>();
+        }
 
         internal DIContainer(Dictionary<Type, DependencyProvider> dependencies, 
             IEnumerable<DependencyProvider> nonLazySingletons,
@@ -137,7 +146,7 @@ namespace EXRContainer.Core {
             contexts.Remove(context);
         }
 
-        public void Dispose() {
+        internal void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }

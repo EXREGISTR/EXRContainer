@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace EXRContainer.LambdaGeneration {
     public class InitializationMethodInvokation : IExpressionsProvider {
-        public void Execute(IGenerationContext context) {
+        public void RegisterExpressions(IGenerationContext context) {
             var dependencyType = context.DependencyData.Type;
             var method = FindMethod(dependencyType);
 
@@ -18,12 +18,10 @@ namespace EXRContainer.LambdaGeneration {
 
         private MethodInfo FindMethod(Type dependencyType) {
             var methods = dependencyType.GetMethods(BindingFlags.Instance);
-            var method = methods.FirstOrDefault(x => x.GetCustomAttribute<EXRConstructorAttribute>() != null)
+            var method = methods.FirstOrDefault(x => x.GetCustomAttribute<EXRInitializatorAttribute>() != null)
                 ?? throw new Exception($"Not found initialization method for type {dependencyType}");
             
             return method;
         }
-
-        public void RegisterVariables(IContextVariablesRegistrator registrator) { }
     }
 }
