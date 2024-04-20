@@ -4,10 +4,10 @@ using EXRContainer.Core;
 
 namespace EXRContainer.LambdaGeneration {
     internal class FinalizatorGenerator : ILambdaCreator<Finalizator<object>> {
-        private readonly IExpressionProvidersContainer providers;
+        private readonly IGenerationExecutor executor;
 
-        public FinalizatorGenerator(IExpressionProvidersContainer providers) {
-            this.providers = providers;
+        public FinalizatorGenerator(IGenerationExecutor providers) {
+            this.executor = providers;
         }
 
         public Finalizator<object> Execute(DependencyGenerationData data) {
@@ -21,12 +21,12 @@ namespace EXRContainer.LambdaGeneration {
             // generated:
             // SomeType typedInstance = (SomeType)instanceParameter;
 
-            var expressions = new List<Expression>() { castObjectExpression };
+            var expressions = new List<Expression> { castObjectExpression };
             var variables = new List<ParameterExpression> { typedInstanceVariable };
 
             var context = new GenerationContext(expressions, variables, contextParameter, typedInstanceVariable, data);
-
-            providers.ExecuteGeneration(context);
+            
+            executor.Execute(context);
 
             return GenerateLambda(expressions, variables, contextParameter, instanceParameter);
         }

@@ -3,8 +3,8 @@ using EXRContainer.Core;
 
 namespace EXRContainer {
     internal class CodeGenerationConfiguration {
-        private readonly FactoryExpressionsContainer defaultFactoryExpressions;
-        private readonly FinalizatorExpressionsContainer defaultFinalizatorExpressions;
+        private readonly FactoryGenerationExecutor defaultFactoryExpressions;
+        private readonly FinalizatorGenerationExecutor defaultFinalizatorExpressions;
 
         private readonly FactoryGenerator defaultFactoryCreator;
         private readonly FinalizatorGenerator defaultFinalizatorCreator;
@@ -23,7 +23,7 @@ namespace EXRContainer {
         public FactoryGenerator CreateFactoryCreator()
             => new(defaultFactoryExpressions);
         public FactoryGenerator CreateFactoryCreator(IDependencyInitializationProvider initializator) 
-            => new(initializator, defaultFactoryCreator);
-        public FinalizatorGenerator CreateFinalizatorCreator() => new(defaultFinalizatorCreator);
+            => new(null);
+        public FinalizatorGenerator CreateFinalizatorCreator() => new(null);
     }
 }

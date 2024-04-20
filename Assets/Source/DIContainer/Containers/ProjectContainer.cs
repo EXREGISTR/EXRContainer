@@ -69,8 +69,8 @@ namespace EXRContainer {
         }
 
         private CodeGenerationConfiguration CreateCodeGenerationConfig() {
-            var factoryCreator = new FactoryGenerator(new ConstructorCreation());
-            var finalizationCreator = new FinalizatorGenerator();
+            var factoryCreator = new FactoryGenerator(null);
+            var finalizationCreator = new FinalizatorGenerator(null);
 
             ConfigurateLambdaCreators(factoryCreator, finalizationCreator);
 

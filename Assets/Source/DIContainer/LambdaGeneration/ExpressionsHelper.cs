@@ -6,7 +6,7 @@ using System.Reflection;
 using EXRContainer.Core;
 
 namespace EXRContainer.LambdaGeneration {
-    public partial class ExpressionsHelper {
+    public static partial class ExpressionsHelper {
         private static readonly MethodInfo addDependencyMethod = typeof(IDIContext).GetMethod("AddDependency");
         private static readonly MethodInfo resolveMethod = typeof(IDIContext).GetMethod("Resolve")!;
 

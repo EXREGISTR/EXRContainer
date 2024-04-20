@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace EXRContainer.LambdaGeneration {
@@ -28,12 +29,10 @@ namespace EXRContainer.LambdaGeneration {
         public ParameterExpression Find(Predicate<ParameterExpression> predicate) => variables.Find(predicate);
 
         public void AppendExpression(Expression expression) {
-            if (expression.NodeType == ExpressionType.Assign && expression is BinaryExpression binary) {
-                if (binary.Left is MemberExpression member) {
-                    if (member.Member.Name == DependencyInstance.Name) {
-                        throw new Exception("You cannot assign a dependency value if the invoker is not an initializator");
-                    }
-                }
+            Debug.Assert(expression != null);
+            if (expression.NodeType == ExpressionType.Assign && expression is BinaryExpression binary
+                && binary.Left == DependencyInstance) {
+                throw new Exception("You cannot assign a dependency value if the invoker is not an initializator");
             }
 
             expressions.Add(expression);

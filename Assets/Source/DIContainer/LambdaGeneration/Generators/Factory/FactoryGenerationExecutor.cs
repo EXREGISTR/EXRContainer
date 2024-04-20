@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace EXRContainer.LambdaGeneration {
-    internal class FactoryExpressionsContainer : IExpressionProvidersContainer, IReadOnlyFactoryExpressionsContainer {
+    internal class FactoryGenerationExecutor : IGenerationExecutor, IReadOnlyFactoryExpressionsContainer {
         private readonly IReadOnlyFactoryExpressionsContainer parent;
 
         private List<IVariablesRegistrationProvider> variablesProviders;
@@ -11,13 +11,13 @@ namespace EXRContainer.LambdaGeneration {
         private readonly IDependencyInitializationProvider initializator;
         private Stack<IExpressionsProvider> postCreationProviders;
 
-        public FactoryExpressionsContainer(IDependencyInitializationProvider initializator, IReadOnlyFactoryExpressionsContainer parent = null) {
+        public FactoryGenerationExecutor(IDependencyInitializationProvider initializator, IReadOnlyFactoryExpressionsContainer parent = null) {
             this.initializator = initializator;
             this.parent = parent;
             PushToVariablesProviders(initializator);
         }
 
-        public FactoryExpressionsContainer(FactoryExpressionsContainer parent) {
+        public FactoryGenerationExecutor(FactoryGenerationExecutor parent) {
             this.initializator = parent.initializator;
             this.parent = parent;
         }
@@ -34,7 +34,7 @@ namespace EXRContainer.LambdaGeneration {
             PushToVariablesProviders(provider);
         }
 
-        public void ExecuteGeneration(GenerationContext context) {
+        public void Execute(GenerationContext context) {
             RegisterVariables(context);
             RegisterExpressions(context);
         }
@@ -61,6 +61,7 @@ namespace EXRContainer.LambdaGeneration {
                 provider.RegisterExpressions(context);
             }
         }
+
         private void PushToVariablesProviders(object provider) {
             if (provider is IVariablesRegistrationProvider variablesProvider) {
                 variablesProviders ??= new List<IVariablesRegistrationProvider>();
@@ -73,15 +74,11 @@ namespace EXRContainer.LambdaGeneration {
             var noProviders = providers == null;
 
             if (parent == null) {
-                if (noProviders) return Enumerable.Empty<IVariablesRegistrationProvider>();
-
-                return providers;
+                return noProviders ? Enumerable.Empty<IVariablesRegistrationProvider>() : providers;
             }
 
             var parentProviders = parent.GetVariablesRegistrationProviders();
-            if (noProviders) return parentProviders;
-
-            return parentProviders.Concat(providers);
+            return noProviders ? parentProviders : parentProviders.Concat(providers);
         }
 
         public IEnumerable<IExpressionsProvider> GetBeforeCreation() {
@@ -89,15 +86,11 @@ namespace EXRContainer.LambdaGeneration {
             var noProviders = providers == null;
 
             if (parent == null) {
-                if (noProviders) return Enumerable.Empty<IExpressionsProvider>();
-
-                return providers;
+                return noProviders ? Enumerable.Empty<IExpressionsProvider>() : providers;
             }
 
-            var parentProviders = parent.GetPostCreation();
-            if (noProviders) return parentProviders;
-
-            return parentProviders.Concat(providers);
+            var parentProviders = parent.GetBeforeCreation();
+            return noProviders ? parentProviders : providers.Concat(parentProviders);
         }
 
         public IEnumerable<IExpressionsProvider> GetPostCreation() {
@@ -105,15 +98,11 @@ namespace EXRContainer.LambdaGeneration {
             var noProviders = providers == null;
 
             if (parent == null) {
-                if (noProviders) return Enumerable.Empty<IExpressionsProvider>();
-
-                return providers;
+                return noProviders ? Enumerable.Empty<IExpressionsProvider>() : providers;
             }
 
             var parentProviders = parent.GetPostCreation();
-            if (noProviders) return parentProviders;
-
-            return parentProviders.Concat(providers);
+            return noProviders ? parentProviders : providers.Concat(parentProviders);
         }
     }
 }

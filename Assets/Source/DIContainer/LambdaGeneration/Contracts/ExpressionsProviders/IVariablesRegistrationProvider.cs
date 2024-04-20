@@ -1,5 +1,5 @@
 ﻿namespace EXRContainer.LambdaGeneration {
     public interface IVariablesRegistrationProvider {
-        public void RegisterVariables(IVariablesRegistrator container);
+        public void RegisterVariables(IVariablesRegistrator registrator);
     }
 }

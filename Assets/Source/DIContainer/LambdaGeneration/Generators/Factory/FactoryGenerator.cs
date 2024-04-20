@@ -5,9 +5,9 @@ using System.Linq.Expressions;
 
 namespace EXRContainer.LambdaGeneration {
     internal class FactoryGenerator : ILambdaCreator<Factory<object>> {
-        private readonly IExpressionProvidersContainer providers;
+        private readonly IGenerationExecutor providers;
 
-        public FactoryGenerator(IExpressionProvidersContainer providers) {
+        public FactoryGenerator(IGenerationExecutor providers) {
             this.providers = providers;
         }
 
@@ -35,7 +35,7 @@ namespace EXRContainer.LambdaGeneration {
         }
 
         private void Execute(GenerationContext context) {
-            providers.ExecuteGeneration(context);
+            providers.Execute(context);
 
             // generated:
             // return dependency;

@@ -4,14 +4,14 @@ using System.Linq.Expressions;
 using System.Linq;
 
 namespace EXRContainer.LambdaGeneration {
-    public class InitializationMethodInvokation : IExpressionsProvider {
+    internal class InitializationMethodInvokation : IExpressionsProvider {
         public void RegisterExpressions(IGenerationContext context) {
             var dependencyType = context.DependencyData.Type;
             var method = FindMethod(dependencyType);
 
             var argumentsResolving 
                 = ExpressionsHelper.DescribeResolving(context.ContextParameter, method.GetParameters());
-            var invokationExpression = Expression.Invoke(Expression.Constant(method), argumentsResolving);
+            var invokationExpression = Expression.Call(context.DependencyInstance, method, argumentsResolving);
 
             context.AppendExpression(invokationExpression);
         }
