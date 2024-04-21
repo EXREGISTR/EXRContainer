@@ -7,9 +7,9 @@ namespace EXRContainer.LambdaGeneration {
 
         private List<IVariablesRegistrationProvider> variablesProviders;
 
-        private Stack<IExpressionsProvider> beforeCreationProviders;
+        private Queue<IExpressionsProvider> beforeCreationProviders;
         private readonly IDependencyInitializationProvider initializator;
-        private Stack<IExpressionsProvider> postCreationProviders;
+        private Queue<IExpressionsProvider> postCreationProviders;
 
         public FactoryGenerationExecutor(IDependencyInitializationProvider initializator, IReadOnlyFactoryExpressionsContainer parent = null) {
             this.initializator = initializator;
@@ -23,14 +23,14 @@ namespace EXRContainer.LambdaGeneration {
         }
 
         public void BeforeCreation(IExpressionsProvider provider) {
-            beforeCreationProviders ??= new Stack<IExpressionsProvider>();
-            beforeCreationProviders.Push(provider);
+            beforeCreationProviders ??= new Queue<IExpressionsProvider>();
+            beforeCreationProviders.Enqueue(provider);
             PushToVariablesProviders(provider);
         }
 
         public void PostCreation(IExpressionsProvider provider) {
-            postCreationProviders ??= new Stack<IExpressionsProvider>();
-            postCreationProviders.Push(provider);
+            postCreationProviders ??= new Queue<IExpressionsProvider>();
+            postCreationProviders.Enqueue(provider);
             PushToVariablesProviders(provider);
         }
 
@@ -90,7 +90,7 @@ namespace EXRContainer.LambdaGeneration {
             }
 
             var parentProviders = parent.GetBeforeCreation();
-            return noProviders ? parentProviders : providers.Concat(parentProviders);
+            return noProviders ? parentProviders : parentProviders.Concat(providers);
         }
 
         public IEnumerable<IExpressionsProvider> GetPostCreation() {
@@ -102,7 +102,7 @@ namespace EXRContainer.LambdaGeneration {
             }
 
             var parentProviders = parent.GetPostCreation();
-            return noProviders ? parentProviders : providers.Concat(parentProviders);
+            return noProviders ? parentProviders : parentProviders.Concat(providers);
         }
     }
 }

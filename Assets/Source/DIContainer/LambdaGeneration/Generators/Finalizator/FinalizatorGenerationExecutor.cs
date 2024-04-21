@@ -25,6 +25,7 @@ namespace EXRContainer.LambdaGeneration {
         public void Push(IExpressionsProvider provider) {
             expressionProviders ??= new Stack<IExpressionsProvider>();
             expressionProviders.Push(provider);
+            PushToVariablesProviders(provider);
         }
 
         private void PushToVariablesProviders(object provider) {
@@ -55,7 +56,7 @@ namespace EXRContainer.LambdaGeneration {
             }
 
             var parentProviders = parent.GetVariablesRegistrationProviders();
-            return noProviders ? parentProviders : parentProviders.Concat(providers);
+            return noProviders ? parentProviders : providers.Concat(parentProviders);
         }
 
     }
