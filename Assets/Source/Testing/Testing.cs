@@ -2,7 +2,6 @@
 using EXRContainer.LambdaGeneration;
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using UnityEngine;
 
 namespace EXRContainer {
@@ -15,16 +14,6 @@ namespace EXRContainer {
 
         public void RegisterExpressions(IGenerationContext context) {
             context.AppendExpression(Expression.Invoke(Expression.Constant(callback)));
-        }
-    }
-
-    public class DisposeInvokation : IExpressionsProvider {
-        private static readonly MethodInfo disposeMethod = typeof(IDisposable).GetMethod("Dispose");
-
-        public void RegisterExpressions(IGenerationContext context) {
-            if (context.DependencyData.Type.GetInterface(nameof(IDisposable)) != null) {
-                context.AppendExpression(Expression.Call(context.DependencyInstance, disposeMethod));
-            }
         }
     }
 
@@ -45,11 +34,11 @@ namespace EXRContainer {
 
         [ContextMenu("Finalize Player")]
         public void FinalizePlayerController() {
-            var container = new FinalizatorGenerationExecutor();
+            var container = new LambdaGenerationExecutor();
             container.Push(new DisposeInvokation());
             container.Push(new CallbackInvokation(() => Debug.Log("уииии")));
 
-            var container2 = new FinalizatorGenerationExecutor(container);
+            var container2 = new LambdaGenerationExecutor(container);
             container2.Push(new CallbackInvokation(() => {
                 gameObject.layer = LayerMask.NameToLayer("Water");
                 Debug.Log("АХААХХАХ а не, не смешно");

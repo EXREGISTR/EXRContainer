@@ -98,7 +98,7 @@ namespace EXRContainer.Core {
                 _ => throw new ArgumentOutOfRangeException(nameof(provider.LifeTime)),
             };
 
-            provider.OnResolveCallback?.Invoke(instance);
+            provider.OnResolveCallback?.Invoke(context, instance);
             return instance;
         }
 

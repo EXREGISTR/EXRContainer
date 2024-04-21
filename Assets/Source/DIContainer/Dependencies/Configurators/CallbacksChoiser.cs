@@ -15,7 +15,7 @@ namespace EXRContainer.Dependencies {
         }
 
         public ICallbacksChoiser<TService> OnResolve(OnResolve<TService> callback) {
-            data.OnResolveCallback = instance => callback((TService)instance);
+            data.OnResolveCallback = (context, instance) => callback(context, (TService)instance);
             return this;
         }
 

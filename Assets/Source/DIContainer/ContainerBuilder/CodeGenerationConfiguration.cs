@@ -4,7 +4,7 @@ using EXRContainer.Core;
 namespace EXRContainer {
     internal class CodeGenerationConfiguration {
         private readonly FactoryGenerationExecutor defaultFactoryExpressions;
-        private readonly FinalizatorGenerationExecutor defaultFinalizatorExpressions;
+        private readonly LambdaGenerationExecutor defaultFinalizatorExpressions;
 
         private readonly FactoryGenerator defaultFactoryCreator;
         private readonly FinalizatorGenerator defaultFinalizatorCreator;
@@ -18,7 +18,6 @@ namespace EXRContainer {
 
         public ILambdaCreator<Factory<object>> DefaultFactoryCreator => defaultFactoryCreator;
         public ILambdaCreator<Finalizator<object>> DefaultFinalizatorCreator => defaultFinalizatorCreator;
-
 
         public FactoryGenerator CreateFactoryCreator()
             => new(defaultFactoryExpressions);

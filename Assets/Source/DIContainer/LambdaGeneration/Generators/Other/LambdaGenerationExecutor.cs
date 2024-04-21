@@ -2,13 +2,13 @@
 using System.Linq;
 
 namespace EXRContainer.LambdaGeneration {
-    internal class FinalizatorGenerationExecutor : IGenerationExecutor, IReadOnlyFinalizatorExpressionsContainer {
-        private readonly IReadOnlyFinalizatorExpressionsContainer parent;
+    internal class LambdaGenerationExecutor : IGenerationExecutor, IReadOnlyProviders {
+        private readonly IReadOnlyProviders parent;
 
         private List<IVariablesRegistrationProvider> variablesProviders;
         private Stack<IExpressionsProvider> expressionProviders;
 
-        public FinalizatorGenerationExecutor(IReadOnlyFinalizatorExpressionsContainer parent = null) {
+        public LambdaGenerationExecutor(IReadOnlyProviders parent = null) {
             this.parent = parent;
         }
 

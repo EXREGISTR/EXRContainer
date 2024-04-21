@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
-using EXRContainer.Core;
 
 namespace EXRContainer.LambdaGeneration {
-    internal class FinalizatorGenerator : ILambdaCreator<Finalizator<object>> {
+    internal abstract class LambdaGenerator<TDelegate> : ILambdaCreator<TDelegate> where TDelegate : MulticastDelegate {
         private readonly IGenerationExecutor executor;
 
-        public FinalizatorGenerator(IGenerationExecutor providers) {
+        protected LambdaGenerator(IGenerationExecutor providers) {
             this.executor = providers;
         }
 
-        public Finalizator<object> Execute(DependencyGenerationData data) {
+        public TDelegate Execute(DependencyGenerationData data) {
             var dependencyType = data.Type;
             var typedInstanceVariable = Expression.Variable(dependencyType, $"{dependencyType.Name}");
 
@@ -31,11 +31,11 @@ namespace EXRContainer.LambdaGeneration {
             return GenerateLambda(expressions, variables, contextParameter, instanceParameter);
         }
 
-        private Finalizator<object> GenerateLambda(IEnumerable<Expression> expressions,
+        private TDelegate GenerateLambda(IEnumerable<Expression> expressions,
             IEnumerable<ParameterExpression> variables, ParameterExpression contextParameter,
             ParameterExpression instanceParameter) {
             var block = Expression.Block(variables, expressions);
-            var lambda = Expression.Lambda<Finalizator<object>>(block, contextParameter, instanceParameter);
+            var lambda = Expression.Lambda<TDelegate>(block, contextParameter, instanceParameter);
             return lambda.Compile();
         }
     }
