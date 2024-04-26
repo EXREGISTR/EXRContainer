@@ -27,7 +27,7 @@ namespace EXRContainer {
 
         private void Initialize() {
             var settingsProvider = ProjectContainer.Resolve<ContainersSettingsProvider>();
-            var codeGenerationConfig = ProjectContainer.Resolve<CodeGenerationConfiguration>();
+            var codeGenerationConfig = ProjectContainer.Resolve<LambdasGenerationConfiguration>();
             var dependenciesConfig = new DependenciesConfiguration(
                 settingsProvider.GlobalContainerSettings.DefaultLifeTime, settingsProvider.GlobalContainerSettings.NonLazyCreation);
 
@@ -49,14 +49,14 @@ namespace EXRContainer {
             }
         }
 
-        private void InstallEntityContainers(EntityContainerSettings entityContainerSettings, CodeGenerationConfiguration codeGenerationConfig) {
+        private void InstallEntityContainers(EntityContainerSettings entityContainerSettings, LambdasGenerationConfiguration codeGenerationConfig) {
             foreach (var entityContainer in entityContainers) {
                 entityContainer.Install(source, entityContainerSettings, codeGenerationConfig);
             }
         }
 
         private ContainerBuilder CreateBuilder(DependenciesConfiguration dependenciesConfig, 
-            CodeGenerationConfiguration codeGenerationConfig) {
+            LambdasGenerationConfiguration codeGenerationConfig) {
             var parent = ProjectContainer.Resolve<DIContainer>();
             var builder = new ContainerBuilder(parent, dependenciesConfig, codeGenerationConfig);
 

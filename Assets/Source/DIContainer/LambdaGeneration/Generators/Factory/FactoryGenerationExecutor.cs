@@ -2,24 +2,27 @@
 using System.Linq;
 
 namespace EXRContainer.LambdaGeneration {
-    internal class FactoryGenerationExecutor : IGenerationExecutor, IReadOnlyFactoryProviders {
-        private readonly IReadOnlyFactoryProviders parent;
+    internal class FactoryGenerationExecutor : IGenerationExecutor, IReadOnlyFactoryExpressionsProviders {
+        private readonly IReadOnlyFactoryExpressionsProviders parent;
 
         private List<IVariablesRegistrationProvider> variablesProviders;
 
         private Queue<IExpressionsProvider> beforeCreationProviders;
-        private readonly IDependencyInitializationProvider initializator;
+        private IDependencyInitializationProvider initializator;
         private Queue<IExpressionsProvider> postCreationProviders;
-
-        public FactoryGenerationExecutor(IDependencyInitializationProvider initializator, IReadOnlyFactoryProviders parent = null) {
-            this.initializator = initializator;
-            this.parent = parent;
-            PushToVariablesProviders(initializator);
-        }
 
         public FactoryGenerationExecutor(FactoryGenerationExecutor parent) {
             this.initializator = parent.initializator;
             this.parent = parent;
+        }
+        public FactoryGenerationExecutor(IDependencyInitializationProvider initializator, IReadOnlyFactoryExpressionsProviders parent = null) {
+            this.parent = parent;
+            SetInitializator(initializator);
+        }
+
+        public void SetInitializator(IDependencyInitializationProvider initializator) {
+            this.initializator = initializator ?? throw new System.ArgumentNullException(nameof(initializator));
+            PushToVariablesProviders(initializator);
         }
 
         public void BeforeCreation(IExpressionsProvider provider) {

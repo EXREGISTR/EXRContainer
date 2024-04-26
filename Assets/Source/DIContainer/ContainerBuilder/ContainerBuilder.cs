@@ -8,11 +8,11 @@ namespace EXRContainer {
     public sealed class ContainerBuilder {
         private readonly DIContainer parent;
         private readonly DependenciesConfiguration config;
-        private readonly CodeGenerationConfiguration codeGenerationData;
+        private readonly LambdasGenerationConfiguration codeGenerationData;
 
         private readonly List<IDependencyCreationData> dependenciesData;
 
-        internal ContainerBuilder(DIContainer parent, DependenciesConfiguration config, CodeGenerationConfiguration codeGenerationConfig) {
+        internal ContainerBuilder(DIContainer parent, DependenciesConfiguration config, LambdasGenerationConfiguration codeGenerationConfig) {
             this.parent = parent;
             this.config = config;
             this.codeGenerationData = codeGenerationConfig;

@@ -8,7 +8,7 @@ namespace EXRContainer {
         private DIContainer source;
 
         internal void Install(DIContainer parent, EntityContainerSettings settings, 
-            CodeGenerationConfiguration codeGenerationConfiguration) {
+            LambdasGenerationConfiguration codeGenerationConfiguration) {
             if (source != null) return;
 
             var dependenciesConfig = new DependenciesConfiguration(settings.DefaultLifeTime, settings.NonLazyCreation);
@@ -36,7 +36,7 @@ namespace EXRContainer {
 
         protected abstract void Install(ContainerBuilder builder);
 
-        private CodeGenerationConfiguration CreateCodeGenerationConfig(CodeGenerationConfiguration other, 
+        private LambdasGenerationConfiguration CreateCodeGenerationConfig(LambdasGenerationConfiguration other, 
             EntityContainerSettings settings) {
             var factoryCreator = other.CreateFactoryCreator();
             var finalizationCreator = other.CreateFinalizatorCreator();
@@ -49,7 +49,7 @@ namespace EXRContainer {
 
         private void ConfigurateLambdaCreators(
             FactoryGenerator factoryCreator,
-            FinalizatorGenerator finalizationCreator,
+            LambdaGenerator finalizationCreator,
             EntityContainerSettings settings) {
             if (settings.TriggerCallbacks) {
                 // factoryCreator.PostCreationProvider(new SubscribeOnTriggerCallbacks());

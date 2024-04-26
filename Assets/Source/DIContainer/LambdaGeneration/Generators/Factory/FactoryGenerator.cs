@@ -4,14 +4,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace EXRContainer.LambdaGeneration {
-    internal class FactoryGenerator : ILambdaCreator<Factory<object>> {
-        private readonly IGenerationExecutor providers;
-
-        public FactoryGenerator(IGenerationExecutor providers) {
-            this.providers = providers;
-        }
-
-        public Factory<object> Execute(DependencyGenerationData data) {
+    internal static class FactoryGenerator {
+        public static Factory<object> Execute(IGenerationExecutor executor, in DependencyGenerationData data) {
             Type dependencyType = data.Type;
 
             ParameterExpression contextParameter = ExpressionsConstants.ContextParameter;
@@ -22,24 +16,20 @@ namespace EXRContainer.LambdaGeneration {
 
             GenerationContext context = new GenerationContext(expressions, variables, contextParameter, dependencyInstance, data);
 
-            Execute(context);
-
-            return GenerateLambda(expressions, variables, contextParameter);
-        }
-
-        private Factory<object> GenerateLambda(IEnumerable<Expression> expressions, 
-            IEnumerable<ParameterExpression> variables, ParameterExpression contextParameter) {
-            var block = Expression.Block(variables, expressions);
-            var lambda = Expression.Lambda<Factory<object>>(block, contextParameter);
-            return lambda.Compile();
-        }
-
-        private void Execute(GenerationContext context) {
-            providers.Execute(context);
+            executor.Execute(context);
 
             // generated:
             // return dependency;
             context.AppendExpression(context.DependencyInstance);
+
+            return GenerateLambda(expressions, variables, contextParameter);
+        }
+
+        private static Factory<object> GenerateLambda(IEnumerable<Expression> expressions, 
+            IEnumerable<ParameterExpression> variables, ParameterExpression contextParameter) {
+            var block = Expression.Block(variables, expressions);
+            var lambda = Expression.Lambda<Factory<object>>(block, contextParameter);
+            return lambda.Compile();
         }
     }
 }

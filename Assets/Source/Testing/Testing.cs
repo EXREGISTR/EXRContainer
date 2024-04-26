@@ -5,6 +5,20 @@ using System.Linq.Expressions;
 using UnityEngine;
 
 namespace EXRContainer {
+    public class PostCreationCallbackInvokation<TService> : IExpressionsProvider {
+        private readonly Action<IDIContext, TService> callback;
+
+        public PostCreationCallbackInvokation(Action<IDIContext, TService> callback) {
+            this.callback = callback;
+        }
+
+        public void RegisterExpressions(IGenerationContext context) {
+            var invokation = Expression.Invoke(Expression.Constant(callback), 
+                context.ContextParameter, context.DependencyInstance);
+            context.AppendExpression(invokation);
+        }
+    }
+
     public class CallbackInvokation : IExpressionsProvider {
         private readonly Action callback;
 
@@ -26,7 +40,11 @@ namespace EXRContainer {
             container.PostCreation(new CallbackInvokation(() => Debug.Log("ЕЕЕЕЕЕЕ ОНО СОЗДАЛООООСЬ")));
 
             var container2 = new FactoryGenerationExecutor(container);
-            container2.PostCreation(new CallbackInvokation(() => Debug.Log("meeeeeee")));
+            container2.PostCreation(new PostCreationCallbackInvokation<PlayerController>(
+                (context, controller) => {
+                    Debug.Log("meeeeeee");
+                    controller.Dispose();
+                }));
 
             var factory = new FactoryGenerator(container2).Execute(new(typeof(PlayerController), LifeTime.Scoped));
             controller = (PlayerController)factory(null);
@@ -44,7 +62,7 @@ namespace EXRContainer {
                 Debug.Log("АХААХХАХ а не, не смешно");
             }));
 
-            var finalizator = new FinalizatorGenerator(container2).Execute(new(typeof(PlayerController), LifeTime.Scoped));
+            var finalizator = new LambdaGenerator(container2).Execute(new(typeof(PlayerController), LifeTime.Scoped));
             finalizator(null, controller);
         }
     }

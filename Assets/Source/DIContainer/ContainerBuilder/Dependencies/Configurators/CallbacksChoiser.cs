@@ -14,7 +14,7 @@ namespace EXRContainer.Dependencies {
             return this;
         }
 
-        public ICallbacksChoiser<TService> OnResolve(OnResolve<TService> callback) {
+        public ICallbacksChoiser<TService> OnResolve(OnResolveCallback<TService> callback) {
             data.OnResolveCallback = (context, instance) => callback(context, (TService)instance);
             return this;
         }
@@ -24,7 +24,7 @@ namespace EXRContainer.Dependencies {
             return this;
         }
 
-        IWithoutCreationCallbacksChoiser<TService> IWithoutCreationCallbacksChoiser<TService>.OnResolve(OnResolve<TService> callback) {
+        IWithoutCreationCallbacksChoiser<TService> IWithoutCreationCallbacksChoiser<TService>.OnResolve(OnResolveCallback<TService> callback) {
             OnResolve(callback);
             return this;
         }
@@ -34,7 +34,7 @@ namespace EXRContainer.Dependencies {
             return this;
         }
 
-        IWithoutCreationCallbacksCompleteChoiser<TService> IWithoutCreationCallbacksCompleteChoiser<TService>.OnResolve(OnResolve<TService> callback) {
+        IWithoutCreationCallbacksCompleteChoiser<TService> IWithoutCreationCallbacksCompleteChoiser<TService>.OnResolve(OnResolveCallback<TService> callback) {
             OnResolve(callback);
             return this;
         }

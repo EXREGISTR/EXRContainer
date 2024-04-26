@@ -46,8 +46,8 @@ namespace EXRContainer {
             source = null;
         }
 
-        private void InstallDependencies(ContainerBuilder builder, CodeGenerationConfiguration codeGenerationConfig) {
-            builder.Register<CodeGenerationConfiguration>().FromInstance(codeGenerationConfig);
+        private void InstallDependencies(ContainerBuilder builder, LambdasGenerationConfiguration codeGenerationConfig) {
+            builder.Register<LambdasGenerationConfiguration>().FromInstance(codeGenerationConfig);
             builder.Register<ContainersSettingsProvider>().FromInstance(settingsProvider);
             builder.Register<ProjectContainer>().FromInstance(this);
         }
@@ -60,7 +60,7 @@ namespace EXRContainer {
             return (T)source.Resolve(typeof(T));
         }
 
-        private ContainerBuilder CreateBuilder(CodeGenerationConfiguration codeGenerationConfig) {
+        private ContainerBuilder CreateBuilder(LambdasGenerationConfiguration codeGenerationConfig) {
             var dependenciesConfig = new DependenciesConfiguration(
                 settingsProvider.GlobalContainerSettings.DefaultLifeTime, settingsProvider.GlobalContainerSettings.NonLazyCreation);
             var builder = new ContainerBuilder(null, dependenciesConfig, codeGenerationConfig);
@@ -68,9 +68,9 @@ namespace EXRContainer {
             return builder;
         }
 
-        private CodeGenerationConfiguration CreateCodeGenerationConfig() {
+        private LambdasGenerationConfiguration CreateCodeGenerationConfig() {
             var factoryCreator = new FactoryGenerator(null);
-            var finalizationCreator = new FinalizatorGenerator(null);
+            var finalizationCreator = new LambdaGenerator(null);
 
             ConfigurateLambdaCreators(factoryCreator, finalizationCreator);
 
@@ -81,7 +81,7 @@ namespace EXRContainer {
         // ЗАКОНЧИТЬ БАЛЯ
         private void ConfigurateLambdaCreators(
             FactoryGenerator factoryCreator, 
-            FinalizatorGenerator finalizationCreator) {
+            LambdaGenerator finalizationCreator) {
 
             var globalSettings = settingsProvider.GlobalContainerSettings;
 

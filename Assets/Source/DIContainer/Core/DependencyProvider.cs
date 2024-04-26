@@ -6,11 +6,11 @@ namespace EXRContainer.Core {
         public IDependency Source { get; }
         public IEnumerable<Type> ContractTypes { get; }
         public LifeTime LifeTime { get; }
-        public OnResolve<object> OnResolveCallback { get; }
+        public OnResolveCallback<object> OnResolveCallback { get; }
         public Finalizator<object> Finalizator { get; }
 
         public DependencyProvider(IDependency source, IEnumerable<Type> contractTypes, 
-            LifeTime lifeTime, OnResolve<object> onResolveCallback, Finalizator<object> finalizator) {
+            LifeTime lifeTime, OnResolveCallback<object> onResolveCallback, Finalizator<object> finalizator) {
             Source = source;
             ContractTypes = contractTypes;
             LifeTime = lifeTime;
