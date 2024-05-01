@@ -1,4 +1,5 @@
 ﻿using EXRContainer.Core;
+using EXRContainer.EventsOld;
 using EXRContainer.LambdaGeneration;
 using System;
 using System.Linq.Expressions;
@@ -31,8 +32,34 @@ namespace EXRContainer {
         }
     }
 
+    public readonly struct MeowMessage : IMessage {
+        public readonly string Message;
+
+        public MeowMessage(string message) {
+            Message = message;
+        }
+    }
+
+    public class MeowHandler : IMessageHandler<MeowMessage> {
+        public void Notify(MeowMessage message) {
+            Debug.Log(message.Message);
+        }
+    }
+
     public class Testing : MonoBehaviour {
         private PlayerController controller;
+
+        [ContextMenu("Check meow set")]
+        public void CheckHashSet() {
+            var coll = new MessageProcessors<MeowMessage>();
+            var handler = new MeowHandler();
+            coll.Push(new(handler, x => true));
+            var result1 = coll.Notify(new("meememm"));
+            coll.Delete(handler);
+            var result2 = coll.Notify(new("rustaaaam"));
+            Debug.Assert(result1 == true);
+            Debug.Assert(result2 == false);
+        }
 
         [ContextMenu("Create player")]
         public void CreatePlayerController() {
@@ -46,7 +73,7 @@ namespace EXRContainer {
                     controller.Dispose();
                 }));
 
-            var factory = new FactoryGenerator(container2).Execute(new(typeof(PlayerController), LifeTime.Scoped));
+            var factory = FactoryGenerator.Execute(container2, new(typeof(PlayerController), LifeTime.Scoped));
             controller = (PlayerController)factory(null);
         }
 
@@ -62,7 +89,8 @@ namespace EXRContainer {
                 Debug.Log("АХААХХАХ а не, не смешно");
             }));
 
-            var finalizator = new LambdaGenerator(container2).Execute(new(typeof(PlayerController), LifeTime.Scoped));
+            var finalizator = LambdaGenerator<Finalizator<object>>
+                .Execute(container2, new(typeof(PlayerController), LifeTime.Scoped));
             finalizator(null, controller);
         }
     }

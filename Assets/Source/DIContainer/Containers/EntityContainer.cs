@@ -38,18 +38,18 @@ namespace EXRContainer {
 
         private LambdasGenerationConfiguration CreateCodeGenerationConfig(LambdasGenerationConfiguration other, 
             EntityContainerSettings settings) {
-            var factoryCreator = other.CreateFactoryCreator();
-            var finalizationCreator = other.CreateFinalizatorCreator();
+            var factoryCreator = other.CreateFactoryExecutor();
+            var finalizationCreator = other.CreateFinalizatorExecutor();
 
             ConfigurateLambdaCreators(factoryCreator, finalizationCreator, settings);
 
-            var data = new CodeGenerationConfiguration(factoryCreator, finalizationCreator);
+            var data = new LambdasGenerationConfiguration(factoryCreator, finalizationCreator, null);
             return data;
         }
 
         private void ConfigurateLambdaCreators(
-            FactoryGenerator factoryCreator,
-            LambdaGenerator finalizationCreator,
+            FactoryGenerationExecutor factoryCreator,
+            LambdaGenerationExecutor finalizationCreator,
             EntityContainerSettings settings) {
             if (settings.TriggerCallbacks) {
                 // factoryCreator.PostCreationProvider(new SubscribeOnTriggerCallbacks());

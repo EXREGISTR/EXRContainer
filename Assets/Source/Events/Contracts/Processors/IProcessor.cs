@@ -1,3 +1,3 @@
 ﻿namespace EXRContainer.Events {
-    public interface IMessage { }
+    public interface IProcessor { }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace EXRContainer.Core {
     public readonly struct DependencyProvider {
-        public IDependency Source { get; }
-        public IEnumerable<Type> ContractTypes { get; }
-        public LifeTime LifeTime { get; }
-        public OnResolveCallback<object> OnResolveCallback { get; }
-        public Finalizator<object> Finalizator { get; }
+        public readonly IDependency Source;
+        public readonly IEnumerable<Type> ContractTypes;
+        public readonly LifeTime LifeTime;
+        public readonly OnResolveCallback<object> OnResolveCallback;
+        public readonly Finalizator<object> Finalizator;
 
         public DependencyProvider(IDependency source, IEnumerable<Type> contractTypes, 
             LifeTime lifeTime, OnResolveCallback<object> onResolveCallback, Finalizator<object> finalizator) {

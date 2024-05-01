@@ -1,12 +1,12 @@
-﻿using EXRContainer.Events;
+﻿using EXRContainer.EventsOld;
 using UnityEngine;
 
 namespace EXRContainer {
     public abstract class UnityCallbacksDetector : MonoBehaviour {
         protected Entity Entity { get; private set; }
-        protected EventsService EventsService { get; private set; }
+        protected ISendersContainer EventsService { get; private set; }
 
-        public void Initialize(Entity entity, EventsService eventsService) {
+        internal void Initialize(Entity entity, EventsService eventsService) {
             if (Entity != null){
                 Debug.LogWarning($"Detector {ToString()} for entity {Entity.name} already initialized!");
                 return;

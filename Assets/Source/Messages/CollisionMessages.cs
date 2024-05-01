@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace EXRContainer.Events {
+namespace EXRContainer.EventsOld {
     public readonly struct CollisionEnterMessage : IMessage {
         public Collision Collision { get; }
         public Entity Sender { get; }

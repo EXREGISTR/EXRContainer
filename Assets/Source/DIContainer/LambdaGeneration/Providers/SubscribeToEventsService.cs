@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using EXRContainer.Events;
+using EXRContainer.EventsOld;
 
 namespace EXRContainer.LambdaGeneration {
     internal class SubscribeToEventsService : IExpressionsProvider, IVariablesRegistrationProvider {

@@ -69,19 +69,19 @@ namespace EXRContainer {
         }
 
         private LambdasGenerationConfiguration CreateCodeGenerationConfig() {
-            var factoryCreator = new FactoryGenerator(null);
-            var finalizationCreator = new LambdaGenerator(null);
+            var factoryCreator = new FactoryGenerationExecutor(null);
+            var finalizationCreator = new LambdaGenerationExecutor(null);
 
             ConfigurateLambdaCreators(factoryCreator, finalizationCreator);
 
-            var data = new CodeGenerationConfiguration(factoryCreator, finalizationCreator);
+            var data = new LambdasGenerationConfiguration(factoryCreator, finalizationCreator, null);
             return data;
         }
 
         // ЗАКОНЧИТЬ БАЛЯ
         private void ConfigurateLambdaCreators(
-            FactoryGenerator factoryCreator, 
-            LambdaGenerator finalizationCreator) {
+            FactoryGenerationExecutor factoryCreator,
+            LambdaGenerationExecutor finalizationCreator) {
 
             var globalSettings = settingsProvider.GlobalContainerSettings;
 

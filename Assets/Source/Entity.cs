@@ -11,16 +11,15 @@ namespace EXRContainer {
 
     public class Entity : MonoBehaviour {
         private Dictionary<Type, UnityCallbacksDetector> callbacksDetector;
-        private EventsService eventsService;
+        private IMediator mediator;
         private DependenciesContext context;
 
-        private void Construct(DependenciesContext context, EventsService eventsService) {
+        private void Construct(DependenciesContext context, IMediator mediator) {
             this.context = context;
-            this.eventsService = eventsService;
+            this.mediator = mediator;
         }
 
         private void OnDestroy() {
-            eventsService.Dispose();
             context.Dispose();
         }
 
@@ -50,7 +49,7 @@ namespace EXRContainer {
             }
 
             var detector = gameObject.AddComponent<TDetector>();
-            detector.Initialize(this, eventsService);
+            detector.Initialize(this, mediator);
             initializator?.Invoke(context, detector);
             callbacksDetector[type] = detector;
         }

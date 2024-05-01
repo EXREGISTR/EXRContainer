@@ -8,7 +8,7 @@ namespace EXRContainer.Dependencies {
         public bool NonLazy { get; }
         public LifeTime LifeTime { get; }
         public IEnumerable<Type> ContractTypes { get; }
-        public IDependencyCreator Creator { get; }
+        public IDependency Dependency { get; }
         public OnResolveCallback<object> OnResolveCallback { get; }
         public Finalizator<object> Finalizator { get; set; }
     }
@@ -26,8 +26,8 @@ namespace EXRContainer.Dependencies {
         public LifeTime LifeTime { get; set; }
         public bool NonLazy { get; set; }
 
-        public Func<DependencyCreationData<TService>, IDependencyCreator> CreatorProvider { get; set; }
-        public IDependencyCreator Creator => CreatorProvider(this);
+        public Func<DependencyCreationData<TService>, IDependency> DependencyProvider { get; set; }
+        public IDependency Dependency => DependencyProvider(this);
 
         public OnResolveCallback<object> OnResolveCallback { get; set; }
         public Finalizator<object> Finalizator { get; set; }

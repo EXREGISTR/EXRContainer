@@ -115,8 +115,8 @@ namespace EXRContainer.Core {
         }
 
         private readonly struct Single {
-            public object Source { get; }
-            public Finalizator<object> Finalizator { get; }
+            public readonly object Source;
+            public readonly Finalizator<object> Finalizator;
 
             public Single(object source, Finalizator<object> finalizator) {
                 Source = source;

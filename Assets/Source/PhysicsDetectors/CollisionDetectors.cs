@@ -1,17 +1,17 @@
-﻿using EXRContainer.Events;
+﻿using EXRContainer.EventsOld;
 using System;
 using UnityEngine;
 
 namespace EXRContainer {
-    public class CollisionDetector : UnityCallbacksDetector {
-        private IMessageHandlersCollection<CollisionEnterMessage> enterHandlers;
-        private IMessageHandlersCollection<CollisionExitMessage> exitHandlers;
+    /*public class CollisionDetector : UnityCallbacksDetector {
+        private IProcessorsCollection<CollisionEnterMessage> enterHandlers;
+        private IProcessorsCollection<CollisionExitMessage> exitHandlers;
         private Predicate<Collision> condition;
 
         public void WithCondition(Predicate<Collision> condition) => this.condition += condition;
 
         protected override void PostInitialize() {
-            enterHandlers = EventsService.GetMessageHandlers<CollisionEnterMessage>(createIfNoHandlers: true);
+            enterHandlers = EventsService.GetMessageProcessors<CollisionEnterMessage>(createIfNoHandlers: true);
             exitHandlers = EventsService.GetMessageHandlers<CollisionExitMessage>(createIfNoHandlers: true);
         }
 
@@ -35,11 +35,11 @@ namespace EXRContainer {
     }
 
     public class CollisionStayDetector : UnityCallbacksDetector {
-        private IMessageHandlersCollection<CollisionStayMessage> handlers;
+        private IProcessorsCollection<CollisionStayMessage> handlers;
         private Predicate<Collision> condition;
 
         protected override void PostInitialize() {
-            handlers = EventsService.GetMessageHandlers<CollisionStayMessage>();
+            handlers = EventsService.GetMessageProcessors<CollisionStayMessage>();
         }
 
         public void WithCondition(Predicate<Collision> condition) => this.condition += condition;
@@ -51,5 +51,5 @@ namespace EXRContainer {
             var message = new CollisionStayMessage(collision, Entity);
             EventsService.Notify(message);
         }
-    }
+    }*/
 }
